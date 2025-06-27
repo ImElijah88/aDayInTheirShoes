@@ -3,154 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Day In Their Shoes - Presentation</title>
+    <title>Audio Player</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif; /* Using Inter font for aesthetics */
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f2f5; /* Light gray background */
-            color: #333;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh; /* Ensure it takes full viewport height */
-            box-sizing: border-box; /* Include padding in element's total width and height */
+        /* Custom styles for the play/pause button */
+        .play-pause-button {
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         }
-        .container {
-            max-width: 960px; /* Increased max-width for better presentation viewing */
-            width: 100%; /* Fluid width */
-            margin: 20px auto;
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 12px; /* More rounded corners */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer, larger shadow */
-            box-sizing: border-box;
+        .play-pause-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #2c3e50; /* Darker title color */
-            font-size: 2.5em; /* Larger title */
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
+        .play-pause-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
         }
-        h1::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: 0;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background-color: #3498db; /* Accent color under title */
-            border-radius: 2px;
-        }
-        p {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        audio {
-            width: 80%; /* Slightly narrower audio player */
-            margin: 30px auto; /* More vertical space */
+        /* Style for error messages */
+        .error-message {
+            color: #dc2626; /* red-600 */
+            font-weight: bold;
+            padding: 8px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        embed {
-            width: 100%;
-            height: 700px; /* Increased height for better PDF viewing */
-            border: 1px solid #ddd; /* Subtle border */
-            border-radius: 8px;
-            margin-top: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-        }
-        .note {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 20px;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .container {
-                padding: 20px;
-                margin: 10px auto;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            audio {
-                width: 95%;
-            }
-            embed {
-                height: 500px; /* Adjust for smaller screens */
-            }
-        }
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            embed {
-                height: 400px; /* Further adjust for very small screens */
-            }
+            background-color: #fee2e2; /* red-100 */
+            border: 1px solid #ef4444; /* red-500 */
         }
     </style>
-    <!-- Google Fonts - Inter for aesthetics -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>A Day In Their Shoes: A Global Journey</h1>
-        
-        <p>Welcome, investors and sponsors! I'm Elijah, and I'm thrilled to share our vision with you.</p>
-        <p>Listen to the audio overview of our presentation:</p>
-        <audio id="presentationAudio" controls> <!-- Added an ID for JavaScript access -->
-            <!-- Corrected audio source to match the uploaded filename -->
-            <source src="dayinthershoes.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+<body class="font-inter bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-        <p>Below, you can view the full presentation in PDF format:</p>
-        <embed src="A Day In Their Shoes1.pdf" type="application/pdf" />
-        
-        <p class="note">If the PDF does not load, your browser may not support embedding PDFs directly. You can download it to view.</p>
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm flex flex-col items-center space-y-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Play Your MP3</h1>
+
+        <!-- Audio element: IMPORTANT READ BELOW! -->
+        <!--
+            CURRENTLY, THIS USES A PUBLIC PLACEHOLDER MP3 FOR TESTING.
+            IF THIS WORKS, IT MEANS THE CODE IS FINE AND THE PROBLEM IS WITH YOUR LOCAL FILE.
+
+            TO USE YOUR FILE, UNCOMMENT THE LINE BELOW AND COMMENT OUT THE PLACEHOLDER LINE:
+            <audio id="myAudio" src="dayinthiershoes.mp3" preload="auto" class="w-full"></audio>
+        -->
+        <audio id="myAudio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto" class="w-full"></audio>
+        <!-- Uncomment the line below and comment the above line to use your local file -->
+        <!-- <audio id="myAudio" src="dayinthiershoes.mp3" preload="auto" class="w-full"></audio> -->
+
+
+        <!-- Play/Pause Button -->
+        <button id="playPauseButton" class="play-pause-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg">
+            Play Audio
+        </button>
+
+        <!-- Display area for messages (e.g., error messages) -->
+        <div id="messageBox" class="text-sm text-gray-700 mt-2 text-center w-full"></div>
     </div>
 
     <script>
-        // JavaScript for basic audio error logging
-        document.addEventListener('DOMContentLoaded', () => {
-            const audioPlayer = document.getElementById('presentationAudio');
+        // Get references to the audio element, button, and message box
+        const myAudio = document.getElementById('myAudio');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const messageBox = document.getElementById('messageBox');
 
-            // Listen for errors on the audio element
-            audioPlayer.addEventListener('error', (e) => {
-                let errorMessage = "An unknown audio error occurred.";
-                switch (e.target.error.code) {
-                    case e.target.error.MEDIA_ERR_ABORTED:
-                        errorMessage = "Audio playback was aborted.";
-                        break;
-                    case e.target.error.MEDIA_ERR_NETWORK:
-                        errorMessage = "A network error caused the audio download to fail.";
-                        break;
-                    case e.target.error.MEDIA_ERR_DECODE:
-                        errorMessage = "Audio playback was interrupted due to a decoding error (corrupt/unsupported file).";
-                        break;
-                    case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = "The audio format is not supported or the file was not found.";
-                        break;
+        let isPlaying = false; // Track the current playback state
+
+        // Function to show a message in the message box
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.classList.remove('error-message'); // Clear previous error styling
+
+            if (type === 'error') {
+                messageBox.classList.add('error-message');
+            } else {
+                messageBox.classList.remove('text-red-600');
+                messageBox.classList.add('text-blue-600'); // Default info color
+            }
+        }
+
+        // Event listener for the play/pause button
+        playPauseButton.addEventListener('click', async () => {
+            if (playPauseButton.disabled) {
+                showMessage("Cannot play: Audio file not found or accessible.", 'error');
+                return;
+            }
+
+            try {
+                if (isPlaying) {
+                    // If currently playing, pause the audio
+                    myAudio.pause();
+                    playPauseButton.textContent = 'Play Audio';
+                    isPlaying = false;
+                    showMessage('Audio paused.');
+                } else {
+                    // Attempt to play the audio
+                    await myAudio.play();
+                    playPauseButton.textContent = 'Pause Audio';
+                    isPlaying = true;
+                    showMessage('Audio playing...');
                 }
-                console.error("Audio Error:", errorMessage, "File:", audioPlayer.querySelector('source').src);
-                console.log("Please check the console for more details. Ensure the audio file 'dayinthershoes.mp3' is correctly uploaded and named in your GitHub repository.");
-            });
-
-            // Optional: Try to load/play after a short delay to catch initial load issues
-            audioPlayer.load();
-            // You can uncomment the line below if you want it to try playing automatically (though user interaction is usually required)
-            // audioPlayer.play().catch(error => console.log("Autoplay prevented:", error.message));
+            } catch (error) {
+                // Catch any errors during playback (e.g., user gesture requirement, file not found)
+                let specificMessage = `Error: ${error.message}.`;
+                if (error.name === "NotAllowedError") {
+                    specificMessage = "Autoplay prevented. Please click 'Play Audio' to start.";
+                } else if (error.name === "AbortError") {
+                    specificMessage = "Playback aborted (e.g., by another play request).";
+                } else if (error.name === "NotFoundError") {
+                    specificMessage = `Audio file not found: ${myAudio.src}. Please check the path and file name.`;
+                }
+                showMessage(`Playback failed: ${specificMessage}`, 'error');
+                console.error("Audio playback error:", error);
+                isPlaying = false; // Ensure state is reset
+                playPauseButton.textContent = 'Play Audio'; // Reset button text
+            }
         });
+
+        // Event listener for when the audio starts playing
+        myAudio.addEventListener('play', () => {
+            isPlaying = true;
+            playPauseButton.textContent = 'Pause Audio';
+            showMessage('Audio playing...');
+            playPauseButton.disabled = false; // Ensure button is enabled
+        });
+
+        // Event listener for when the audio is paused
+        myAudio.addEventListener('pause', () => {
+            isPlaying = false;
+            playPauseButton.textContent = 'Play Audio';
+            showMessage('Audio paused.');
+        });
+
+        // Event listener for when the audio ends
+        myAudio.addEventListener('ended', () => {
+            isPlaying = false;
+            playPauseButton.textContent = 'Play Audio';
+            showMessage('Audio finished.');
+        });
+
+        // Event listener for when the audio fails to load or play
+        myAudio.addEventListener('error', (e) => {
+            let errorMessage = 'An unknown audio error occurred.';
+            const error = e.target.error; // Get the MediaError object
+
+            if (error) {
+                switch (error.code) {
+                    case error.MEDIA_ERR_ABORTED:
+                        errorMessage = 'Audio playback aborted.';
+                        break;
+                    case error.MEDIA_ERR_NETWORK:
+                        errorMessage = 'A network error caused the audio download to fail. Check your internet connection or file path.';
+                        break;
+                    case error.MEDIA_ERR_DECODE:
+                        errorMessage = 'The audio could not be decoded. Ensure it\'s a valid MP3 file.';
+                        break;
+                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        errorMessage = `The audio format is not supported or the source "${myAudio.src}" was not found. Please check the file path and ensure it's accessible.`;
+                        break;
+                    default:
+                        errorMessage = `An unspecified audio error occurred (Code: ${error.code}).`;
+                        if (error.message) {
+                            errorMessage += ` Message: ${error.message}`;
+                        }
+                }
+            } else {
+                errorMessage = 'An unknown audio error occurred with no specific error object. This often indicates the audio file was not found or accessible.';
+            }
+
+            showMessage(`Audio Error: ${errorMessage}`, 'error');
+            console.error("Audio element error:", error); // Log the full error object for debugging
+            console.log("Audio source currently set to:", myAudio.src); // Log the source for debugging
+            isPlaying = false;
+            playPauseButton.textContent = 'Play Audio';
+            playPauseButton.disabled = true; // Disable button if source is bad
+        });
+
+        // Event listener for when metadata is loaded (e.g., duration, dimensions)
+        myAudio.addEventListener('loadedmetadata', () => {
+            console.log("Metadata loaded. Audio duration:", myAudio.duration);
+            showMessage('Audio metadata loaded. Click "Play Audio" to start.');
+            playPauseButton.disabled = false; // Enable button if metadata loads
+        });
+
+        // Event listener for when enough data is loaded to play
+        myAudio.addEventListener('canplay', () => {
+            console.log("Audio is ready to play.");
+            showMessage('Audio ready. Click "Play Audio" to start.');
+            playPauseButton.disabled = false; // Enable button if can play
+        });
+
+        // Handle cases where the audio element might not have loaded metadata yet
+        // This is important for browsers that require a user gesture to play media
+        window.addEventListener('load', () => {
+            console.log("Window loaded. Checking audio state.");
+            console.log("myAudio.src:", myAudio.src);
+            console.log("myAudio.readyState:", myAudio.readyState);
+            console.log("myAudio.networkState:", myAudio.networkState);
+
+            if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+                // This is the most likely culprit for "Audio element error: {}"
+                showMessage(`Error: Audio source "${myAudio.src}" could not be found. Please ensure the MP3 file is in the correct location and named correctly.`, 'error');
+                playPauseButton.disabled = true; // Disable button if source is bad
+            } else if (myAudio.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+                // This means the audio element hasn't even tried to load a resource yet.
+                showMessage('Audio element is empty. Source might be invalid or not yet set.', 'error');
+                playPauseButton.disabled = true;
+            } else if (myAudio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+                // Audio is ready to play
+                showMessage('Audio ready. Click "Play Audio" to start.');
+                playPauseButton.disabled = false;
+            } else {
+                // Still loading or checking
+                showMessage('Loading audio...');
+                // If it's still loading after window load, keep button disabled until loadeddata/canplay
+                playPauseButton.disabled = true;
+            }
+        });
+
     </script>
 </body>
 </html>
