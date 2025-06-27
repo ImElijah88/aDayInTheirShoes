@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
+    <title>A Day In Their Shoes - Presentation with Audio</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -29,33 +29,51 @@
             background-color: #fee2e2; /* red-100 */
             border: 1px solid #ef4444; /* red-500 */
         }
+        /* Ensure iframe takes up available space and scrolls if content overflows */
+        .pdf-viewer {
+            width: 100%;
+            height: calc(100vh - 200px); /* Adjust height to leave space for controls */
+            border: 1px solid #e2e8f0; /* gray-200 */
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        @media (min-width: 768px) { /* Medium screens and up */
+            .pdf-viewer {
+                height: calc(100vh - 150px); /* More space on larger screens */
+            }
+        }
     </style>
 </head>
-<body class="font-inter bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="font-inter bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm flex flex-col items-center space-y-6">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">Play Your MP3</h1>
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl flex flex-col items-center space-y-6">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-4">A Day In Their Shoes</h1>
+        <p class="text-gray-600 text-center mb-6">View the presentation and play the accompanying audio.</p>
 
-        <!-- Audio element: IMPORTANT READ BELOW! -->
-        <!--
-            CURRENTLY, THIS USES A PUBLIC PLACEHOLDER MP3 FOR TESTING.
-            IF THIS WORKS, IT MEANS THE CODE IS FINE AND THE PROBLEM IS WITH YOUR LOCAL FILE.
+        <!-- PDF Viewer -->
+        <div class="w-full flex-grow flex flex-col items-center">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation</h2>
+            <iframe id="pdfViewer" src="A Day In Their Shoes1.pdf" class="pdf-viewer" frameborder="0">
+                This browser does not support PDFs. Please download the PDF to view it: <a href="A Day In Their Shoes1.pdf" class="text-blue-500 hover:underline">Download PDF</a>.
+            </iframe>
+        </div>
 
-            TO USE YOUR FILE, UNCOMMENT THE LINE BELOW AND COMMENT OUT THE PLACEHOLDER LINE:
-            <audio id="myAudio" src="dayinthiershoes.mp3" preload="auto" class="w-full"></audio>
-        -->
-        <audio id="myAudio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto" class="w-full"></audio>
-        <!-- Uncomment the line below and comment the above line to use your local file -->
-        <!-- <audio id="myAudio" src="dayinthiershoes.mp3" preload="auto" class="w-full"></audio> -->
+        <!-- Audio Player Controls -->
+        <div class="w-full max-w-sm flex flex-col items-center space-y-4 pt-6">
+            <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
+            <!-- Audio element: Using your local audio file 'A Day In Their Shoes.mp3' -->
+            <!-- IMPORTANT: Please ensure this file is named EXACTLY 'A Day In Their Shoes.mp3' (including spaces and capitalization) -->
+            <!-- and is located in the SAME directory as this HTML file. -->
+            <!-- If issues persist, consider converting the MP3 to ensure its format is valid. -->
+            <audio id="myAudio" src="A Day In Their Shoes.mp3" preload="auto" class="w-full"></audio>
 
+            <!-- Play/Pause Button -->
+            <button id="playPauseButton" class="play-pause-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg">
+                Play Audio
+            </button>
 
-        <!-- Play/Pause Button -->
-        <button id="playPauseButton" class="play-pause-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg">
-            Play Audio
-        </button>
-
-        <!-- Display area for messages (e.g., error messages) -->
-        <div id="messageBox" class="text-sm text-gray-700 mt-2 text-center w-full"></div>
+            <!-- Display area for messages (e.g., error messages) -->
+            <div id="messageBox" class="text-sm text-gray-700 mt-2 text-center w-full"></div>
+        </div>
     </div>
 
     <script>
@@ -63,6 +81,7 @@
         const myAudio = document.getElementById('myAudio');
         const playPauseButton = document.getElementById('playPauseButton');
         const messageBox = document.getElementById('messageBox');
+        const pdfViewer = document.getElementById('pdfViewer'); // Reference to the iframe
 
         let isPlaying = false; // Track the current playback state
 
@@ -82,7 +101,7 @@
         // Event listener for the play/pause button
         playPauseButton.addEventListener('click', async () => {
             if (playPauseButton.disabled) {
-                showMessage("Cannot play: Audio file not found or accessible.", 'error');
+                showMessage("Cannot play: Audio file not found or accessible. Please check the file path.", 'error');
                 return;
             }
 
@@ -112,6 +131,7 @@
                 }
                 showMessage(`Playback failed: ${specificMessage}`, 'error');
                 console.error("Audio playback error:", error);
+                console.error("Full error object on playback failure:", error); // Added for more detailed logging
                 isPlaying = false; // Ensure state is reset
                 playPauseButton.textContent = 'Play Audio'; // Reset button text
             }
@@ -144,6 +164,9 @@
             let errorMessage = 'An unknown audio error occurred.';
             const error = e.target.error; // Get the MediaError object
 
+            console.error("Audio element error event triggered:", e); // Log the event object
+            console.error("MediaError object:", error); // Log the MediaError object
+
             if (error) {
                 switch (error.code) {
                     case error.MEDIA_ERR_ABORTED:
@@ -156,7 +179,9 @@
                         errorMessage = 'The audio could not be decoded. Ensure it\'s a valid MP3 file.';
                         break;
                     case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = `The audio format is not supported or the source "${myAudio.src}" was not found. Please check the file path and ensure it's accessible.`;
+                        errorMessage = `The audio format is not supported or the source "${myAudio.src}" was not found. ` +
+                                       `Please **double-check the file name (including capitalization and spaces)** and ensure it is in the **same directory** as this HTML file. ` +
+                                       `Also, ensure the MP3 file itself is not corrupted. If these checks are correct, consider converting your MP3 file to a new one using an online converter.`;
                         break;
                     default:
                         errorMessage = `An unspecified audio error occurred (Code: ${error.code}).`;
@@ -169,7 +194,7 @@
             }
 
             showMessage(`Audio Error: ${errorMessage}`, 'error');
-            console.error("Audio element error:", error); // Log the full error object for debugging
+            console.error("Audio element error details:", errorMessage); // Log the constructed message
             console.log("Audio source currently set to:", myAudio.src); // Log the source for debugging
             isPlaying = false;
             playPauseButton.textContent = 'Play Audio';
@@ -199,22 +224,22 @@
             console.log("myAudio.networkState:", myAudio.networkState);
 
             if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
-                // This is the most likely culprit for "Audio element error: {}"
                 showMessage(`Error: Audio source "${myAudio.src}" could not be found. Please ensure the MP3 file is in the correct location and named correctly.`, 'error');
                 playPauseButton.disabled = true; // Disable button if source is bad
             } else if (myAudio.networkState === HTMLMediaElement.NETWORK_EMPTY) {
-                // This means the audio element hasn't even tried to load a resource yet.
                 showMessage('Audio element is empty. Source might be invalid or not yet set.', 'error');
                 playPauseButton.disabled = true;
             } else if (myAudio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-                // Audio is ready to play
                 showMessage('Audio ready. Click "Play Audio" to start.');
                 playPauseButton.disabled = false;
             } else {
-                // Still loading or checking
                 showMessage('Loading audio...');
-                // If it's still loading after window load, keep button disabled until loadeddata/canplay
                 playPauseButton.disabled = true;
+            }
+
+            // Check if PDF can be loaded (note: direct content access is often blocked by CORS)
+            if (!pdfViewer.src) {
+                showMessage('PDF source is not set. Please check the "src" attribute of the iframe.', 'error');
             }
         });
 
