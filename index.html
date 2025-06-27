@@ -7,16 +7,16 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom styles for the play/pause button */
-        .play-pause-button {
+        /* Custom styles for buttons */
+        .interactive-button {
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         }
-        .play-pause-button:hover {
+        .interactive-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .play-pause-button:active {
+        .interactive-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
         }
@@ -28,18 +28,33 @@
             border-radius: 8px;
             background-color: #fee2e2; /* red-100 */
             border: 1px solid #ef4444; /* red-500 */
+            margin-top: 1rem;
         }
         /* Ensure iframe takes up available space and scrolls if content overflows */
         .pdf-viewer {
             width: 100%;
-            height: calc(100vh - 200px); /* Adjust height to leave space for controls */
+            height: 400px; /* Default height, will adjust based on controls */
             border: 1px solid #e2e8f0; /* gray-200 */
             border-radius: 0.75rem; /* rounded-xl */
         }
-        @media (min-width: 768px) { /* Medium screens and up */
+        @media (min-width: 768px) {
             .pdf-viewer {
-                height: calc(100vh - 150px); /* More space on larger screens */
+                height: 500px; /* Larger height on medium screens */
             }
+        }
+        @media (min-width: 1024px) {
+            .pdf-viewer {
+                height: 600px; /* Even larger on large screens */
+            }
+        }
+        .file-input-label {
+            @apply flex flex-col items-center justify-center cursor-pointer bg-gray-200 hover:bg-gray-300 rounded-md py-2 px-4 text-gray-700 font-semibold transition-colors duration-200;
+        }
+        .file-input-label input[type="file"] {
+            display: none;
+        }
+        .file-name-display {
+            @apply text-sm text-gray-500 mt-1 truncate w-full px-2;
         }
     </style>
 </head>
@@ -47,27 +62,49 @@
 
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl flex flex-col items-center space-y-6">
         <h1 class="text-3xl font-extrabold text-gray-900 mb-4">A Day In Their Shoes</h1>
-        <p class="text-gray-600 text-center mb-6">View the presentation and play the accompanying audio.</p>
+        <p class="text-gray-600 text-center mb-6">Select your PDF presentation and MP3 audio file.</p>
+
+        <!-- File Input Controls -->
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="flex flex-col items-center">
+                <label for="pdfFileInput" class="file-input-label interactive-button w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Select PDF File</span>
+                    <input type="file" id="pdfFileInput" accept=".pdf">
+                </label>
+                <div id="pdfFileName" class="file-name-display">No PDF selected</div>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <label for="audioFileInput" class="file-input-label interactive-button w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Select MP3 File</span>
+                    <input type="file" id="audioFileInput" accept=".mp3">
+                </label>
+                <div id="audioFileName" class="file-name-display">No MP3 selected</div>
+            </div>
+        </div>
 
         <!-- PDF Viewer -->
-        <div class="w-full flex-grow flex flex-col items-center">
+        <div class="w-full flex-grow flex flex-col items-center mt-6">
             <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation</h2>
-            <iframe id="pdfViewer" src="A Day In Their Shoes1.pdf" class="pdf-viewer" frameborder="0">
-                This browser does not support PDFs. Please download the PDF to view it: <a href="A Day In Their Shoes1.pdf" class="text-blue-500 hover:underline">Download PDF</a>.
+            <iframe id="pdfViewer" src="" class="pdf-viewer" frameborder="0">
+                Your browser does not support PDFs or a PDF has not been loaded. Please select a PDF file.
             </iframe>
         </div>
 
         <!-- Audio Player Controls -->
         <div class="w-full max-w-sm flex flex-col items-center space-y-4 pt-6">
             <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
-            <!-- Audio element: Using your local audio file, now named 'audio.mp3' -->
-            <!-- IMPORTANT: Please ensure your MP3 file is named EXACTLY 'audio.mp3' (all lowercase, no spaces) -->
-            <!-- and is located in the SAME directory as this HTML file. -->
-            <!-- If issues persist, consider converting the MP3 to ensure its format is valid. -->
-            <audio id="myAudio" src="audio.mp3" preload="auto" class="w-full"></audio>
+            <!-- Audio element: src will be set by JavaScript based on user selection -->
+            <audio id="myAudio" src="" preload="auto" class="w-full"></audio>
 
             <!-- Play/Pause Button -->
-            <button id="playPauseButton" class="play-pause-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg">
+            <button id="playPauseButton" class="interactive-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg" disabled>
                 Play Audio
             </button>
 
@@ -77,15 +114,19 @@
     </div>
 
     <script>
-        // Get references to the audio element, button, and message box
+        // Get references to elements
         const myAudio = document.getElementById('myAudio');
         const playPauseButton = document.getElementById('playPauseButton');
         const messageBox = document.getElementById('messageBox');
-        const pdfViewer = document.getElementById('pdfViewer'); // Reference to the iframe
+        const pdfViewer = document.getElementById('pdfViewer');
+        const pdfFileInput = document.getElementById('pdfFileInput');
+        const audioFileInput = document.getElementById('audioFileInput');
+        const pdfFileNameDisplay = document.getElementById('pdfFileName');
+        const audioFileNameDisplay = document.getElementById('audioFileName');
 
         let isPlaying = false; // Track the current playback state
 
-        // Function to show a message in the message box
+        // Function to show messages in the message box
         function showMessage(message, type = 'info') {
             messageBox.textContent = message;
             messageBox.classList.remove('error-message'); // Clear previous error styling
@@ -98,151 +139,148 @@
             }
         }
 
+        // Handle PDF file selection
+        pdfFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type === 'application/pdf') {
+                    const fileURL = URL.createObjectURL(file);
+                    pdfViewer.src = fileURL;
+                    pdfFileNameDisplay.textContent = `PDF: ${file.name}`;
+                    showMessage(`PDF "${file.name}" loaded successfully.`, 'info');
+                } else {
+                    showMessage('Please select a valid PDF file.', 'error');
+                    pdfFileNameDisplay.textContent = 'Invalid file type';
+                    pdfViewer.src = ''; // Clear iframe if invalid file
+                }
+            } else {
+                pdfFileNameDisplay.textContent = 'No PDF selected';
+                pdfViewer.src = '';
+                showMessage('No PDF file selected.', 'info');
+            }
+        });
+
+        // Handle Audio file selection
+        audioFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type === 'audio/mpeg' || file.type === 'audio/mp3') { // Common MP3 MIME types
+                    const fileURL = URL.createObjectURL(file);
+                    myAudio.src = fileURL;
+                    audioFileNameDisplay.textContent = `MP3: ${file.name}`;
+                    // Attempt to load metadata to enable play button
+                    myAudio.load();
+                    showMessage(`MP3 "${file.name}" selected. Loading audio...`, 'info');
+                } else {
+                    showMessage('Please select a valid MP3 file.', 'error');
+                    audioFileNameDisplay.textContent = 'Invalid file type';
+                    myAudio.src = ''; // Clear audio if invalid file
+                    playPauseButton.disabled = true;
+                }
+            } else {
+                audioFileNameDisplay.textContent = 'No MP3 selected';
+                myAudio.src = '';
+                playPauseButton.disabled = true;
+                showMessage('No MP3 file selected.', 'info');
+            }
+        });
+
         // Event listener for the play/pause button
         playPauseButton.addEventListener('click', async () => {
             if (playPauseButton.disabled) {
-                showMessage("Cannot play: Audio file not found or accessible. Please check the file path.", 'error');
+                showMessage("Cannot play: No valid audio file loaded.", 'error');
+                return;
+            }
+            if (!myAudio.src) {
+                showMessage("Cannot play: No audio file has been selected yet.", 'error');
                 return;
             }
 
             try {
                 if (isPlaying) {
-                    // If currently playing, pause the audio
                     myAudio.pause();
                     playPauseButton.textContent = 'Play Audio';
                     isPlaying = false;
                     showMessage('Audio paused.');
                 } else {
-                    // Attempt to play the audio
                     await myAudio.play();
                     playPauseButton.textContent = 'Pause Audio';
                     isPlaying = true;
                     showMessage('Audio playing...');
                 }
             } catch (error) {
-                // Catch any errors during playback (e.g., user gesture requirement, file not found)
-                let specificMessage = `Error: ${error.message}.`;
+                let specificMessage = `Playback failed: ${error.message}.`;
                 if (error.name === "NotAllowedError") {
                     specificMessage = "Autoplay prevented. Please click 'Play Audio' to start.";
                 } else if (error.name === "AbortError") {
                     specificMessage = "Playback aborted (e.g., by another play request).";
-                } else if (error.name === "NotFoundError") {
-                    specificMessage = `Audio file not found: ${myAudio.src}. Please check the path and file name.`;
+                } else if (error.name === "NotFoundError" || myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+                    specificMessage = `Audio file not found or could not be loaded: ${myAudio.currentSrc}. Please select a valid MP3 file.`;
                 }
-                showMessage(`Playback failed: ${specificMessage}`, 'error');
+                showMessage(`Audio Error: ${specificMessage}`, 'error');
                 console.error("Audio playback error:", error);
-                console.error("Full error object on playback failure:", error); // Added for more detailed logging
-                isPlaying = false; // Ensure state is reset
-                playPauseButton.textContent = 'Play Audio'; // Reset button text
+                isPlaying = false;
+                playPauseButton.textContent = 'Play Audio';
             }
         });
 
-        // Event listener for when the audio starts playing
+        // Audio event listeners
         myAudio.addEventListener('play', () => {
             isPlaying = true;
             playPauseButton.textContent = 'Pause Audio';
             showMessage('Audio playing...');
-            playPauseButton.disabled = false; // Ensure button is enabled
+            playPauseButton.disabled = false;
         });
 
-        // Event listener for when the audio is paused
         myAudio.addEventListener('pause', () => {
             isPlaying = false;
             playPauseButton.textContent = 'Play Audio';
             showMessage('Audio paused.');
         });
 
-        // Event listener for when the audio ends
         myAudio.addEventListener('ended', () => {
             isPlaying = false;
             playPauseButton.textContent = 'Play Audio';
             showMessage('Audio finished.');
         });
 
-        // Event listener for when the audio fails to load or play
+        myAudio.addEventListener('loadedmetadata', () => {
+            console.log("Audio metadata loaded. Duration:", myAudio.duration);
+            showMessage('Audio file loaded. Click "Play Audio" to start.');
+            playPauseButton.disabled = false; // Enable play button once metadata is loaded
+        });
+
         myAudio.addEventListener('error', (e) => {
-            let errorMessage = 'An unknown audio error occurred.';
-            const error = e.target.error; // Get the MediaError object
-
-            console.error("Audio element error event triggered:", e); // Log the event object
-            console.error("MediaError object:", error); // Log the MediaError object
-
+            const error = e.target.error;
+            let errorMessage = `An audio error occurred (Code: ${error ? error.code : 'unknown'}).`;
             if (error) {
                 switch (error.code) {
-                    case error.MEDIA_ERR_ABORTED:
-                        errorMessage = 'Audio playback aborted.';
+                    case MediaError.MEDIA_ERR_ABORTED:
+                        errorMessage = 'Audio load aborted by user.';
                         break;
-                    case error.MEDIA_ERR_NETWORK:
-                        errorMessage = 'A network error caused the audio download to fail. Check your internet connection or file path.';
+                    case MediaError.MEDIA_ERR_NETWORK:
+                        errorMessage = 'A network error prevented audio download.';
                         break;
-                    case error.MEDIA_ERR_DECODE:
+                    case MediaError.MEDIA_ERR_DECODE:
                         errorMessage = 'The audio could not be decoded. Ensure it\'s a valid MP3 file.';
                         break;
-                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = `The audio format is not supported or the source "${myAudio.src}" was not found. ` +
-                                       `Please **double-check the file name (currently 'audio.mp3')** and ensure it is in the **same directory** as this HTML file. ` +
-                                       `Also, ensure the MP3 file itself is not corrupted. If these checks are correct, consider converting your MP3 file to a new one using an online converter.`;
+                    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        errorMessage = `The selected audio format is not supported or the file could not be accessed. Please select a valid MP3.`;
                         break;
-                    default:
-                        errorMessage = `An unspecified audio error occurred (Code: ${error.code}).`;
-                        if (error.message) {
-                            errorMessage += ` Message: ${error.message}`;
-                        }
                 }
-            } else {
-                errorMessage = 'An unknown audio error occurred with no specific error object. This often indicates the audio file was not found or accessible.';
             }
-
-            showMessage(`Audio Error: ${errorMessage}`, 'error');
-            console.error("Audio element error details:", errorMessage); // Log the constructed message
-            console.log("Audio source currently set to:", myAudio.src); // Log the source for debugging
+            showMessage(`Audio Load Error: ${errorMessage}`, 'error');
+            console.error("Audio element error:", error);
             isPlaying = false;
             playPauseButton.textContent = 'Play Audio';
-            playPauseButton.disabled = true; // Disable button if source is bad
+            playPauseButton.disabled = true; // Disable button on error
         });
 
-        // Event listener for when metadata is loaded (e.g., duration, dimensions)
-        myAudio.addEventListener('loadedmetadata', () => {
-            console.log("Metadata loaded. Audio duration:", myAudio.duration);
-            showMessage('Audio metadata loaded. Click "Play Audio" to start.');
-            playPauseButton.disabled = false; // Enable button if metadata loads
-        });
-
-        // Event listener for when enough data is loaded to play
-        myAudio.addEventListener('canplay', () => {
-            console.log("Audio is ready to play.");
-            showMessage('Audio ready. Click "Play Audio" to start.');
-            playPauseButton.disabled = false; // Enable button if can play
-        });
-
-        // Handle cases where the audio element might not have loaded metadata yet
-        // This is important for browsers that require a user gesture to play media
+        // Initial state: disable play button until an audio file is selected and loaded
         window.addEventListener('load', () => {
-            console.log("Window loaded. Checking audio state.");
-            console.log("myAudio.src:", myAudio.src);
-            console.log("myAudio.readyState:", myAudio.readyState);
-            console.log("myAudio.networkState:", myAudio.networkState);
-
-            if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
-                showMessage(`Error: Audio source "${myAudio.src}" could not be found. Please ensure the MP3 file is in the correct location and named correctly.`, 'error');
-                playPauseButton.disabled = true; // Disable button if source is bad
-            } else if (myAudio.networkState === HTMLMediaElement.NETWORK_EMPTY) {
-                showMessage('Audio element is empty. Source might be invalid or not yet set.', 'error');
-                playPauseButton.disabled = true;
-            } else if (myAudio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-                showMessage('Audio ready. Click "Play Audio" to start.');
-                playPauseButton.disabled = false;
-            } else {
-                showMessage('Loading audio...');
-                playPauseButton.disabled = true;
-            }
-
-            // Check if PDF can be loaded (note: direct content access is often blocked by CORS)
-            if (!pdfViewer.src) {
-                showMessage('PDF source is not set. Please check the "src" attribute of the iframe.', 'error');
-            }
+            playPauseButton.disabled = true;
+            showMessage('Please select your PDF and MP3 files to begin.');
         });
-
     </script>
 </body>
 </html>
