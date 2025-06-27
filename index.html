@@ -10,33 +10,49 @@
         /* Custom styles for buttons */
         .interactive-button {
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+            background: linear-gradient(145deg, #60a5fa, #3b82f6); /* Gradient blue */
+            border: none;
+            color: white;
         }
         .interactive-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, #3b82f6, #2563eb); /* Darker gradient on hover */
         }
         .interactive-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            background: linear-gradient(145deg, #2563eb, #3b82f6); /* Reverse gradient on active */
         }
+        .interactive-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #9ca3af; /* gray-400 */
+        }
+
         /* Style for error messages */
         .error-message {
             color: #dc2626; /* red-600 */
             font-weight: bold;
             padding: 8px;
-            border-radius: 8px;
+            border-radius: 0.5rem; /* rounded-lg */
             background-color: #fee2e2; /* red-100 */
             border: 1px solid #ef4444; /* red-500 */
             margin-top: 1rem;
         }
+
         /* Ensure iframe takes up available space and scrolls if content overflows */
         .pdf-viewer {
             width: 100%;
-            height: 400px; /* Default height, will adjust based on controls */
+            height: 400px; /* Default height */
             border: 1px solid #e2e8f0; /* gray-200 */
             border-radius: 0.75rem; /* rounded-xl */
+            background-color: #ffffff; /* Ensure white background for viewer */
         }
+        /* Media queries for responsive height of PDF viewer */
         @media (min-width: 768px) {
             .pdf-viewer {
                 height: 500px; /* Larger height on medium screens */
@@ -47,69 +63,51 @@
                 height: 600px; /* Even larger on large screens */
             }
         }
-        .file-input-label {
-            @apply flex flex-col items-center justify-center cursor-pointer bg-gray-200 hover:bg-gray-300 rounded-md py-2 px-4 text-gray-700 font-semibold transition-colors duration-200;
-        }
-        .file-input-label input[type="file"] {
-            display: none;
-        }
-        .file-name-display {
-            @apply text-sm text-gray-500 mt-1 truncate w-full px-2;
+
+        .pdf-controls {
+            @apply flex justify-end w-full mb-3; /* Align full-screen button to the right */
         }
     </style>
 </head>
-<body class="font-inter bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="font-inter bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl flex flex-col items-center space-y-6">
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-4">A Day In Their Shoes</h1>
-        <p class="text-gray-600 text-center mb-6">Select your PDF presentation and MP3 audio file.</p>
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-5xl flex flex-col items-center space-y-8 transform transition-transform duration-300 hover:scale-[1.01]">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4 text-center">A Day In Their Shoes</h1>
+        <p class="text-lg text-gray-600 text-center max-w-2xl">
+            This presentation and accompanying audio are loaded directly from your GitHub repository.
+            View the document in full screen for an immersive experience.
+        </p>
 
-        <!-- File Input Controls -->
-        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="flex flex-col items-center">
-                <label for="pdfFileInput" class="file-input-label interactive-button w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <!-- PDF Viewer Section -->
+        <div class="w-full flex flex-col items-center mt-6">
+            <div class="pdf-controls">
+                <button id="fullscreenButton" class="interactive-button bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg text-sm flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
                     </svg>
-                    <span>Select PDF File</span>
-                    <input type="file" id="pdfFileInput" accept=".pdf">
-                </label>
-                <div id="pdfFileName" class="file-name-display">No PDF selected</div>
+                    <span>Full Screen PDF</span>
+                </button>
             </div>
-
-            <div class="flex flex-col items-center">
-                <label for="audioFileInput" class="file-input-label interactive-button w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>Select MP3 File</span>
-                    <input type="file" id="audioFileInput" accept=".mp3">
-                </label>
-                <div id="audioFileName" class="file-name-display">No MP3 selected</div>
-            </div>
-        </div>
-
-        <!-- PDF Viewer -->
-        <div class="w-full flex-grow flex flex-col items-center mt-6">
-            <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation</h2>
-            <iframe id="pdfViewer" src="" class="pdf-viewer" frameborder="0">
-                Your browser does not support PDFs or a PDF has not been loaded. Please select a PDF file.
+            <!-- PDF Viewer: Directly linking to the PDF in your GitHub repo -->
+            <iframe id="pdfViewer" src="https://raw.githubusercontent.com/imelijah88/aDayInTheirShoes/main/A%20Day%20In%20Their%20Shoes1.pdf" class="pdf-viewer" frameborder="0">
+                Your browser does not support PDFs or there was an issue loading the PDF from GitHub.
             </iframe>
         </div>
 
         <!-- Audio Player Controls -->
         <div class="w-full max-w-sm flex flex-col items-center space-y-4 pt-6">
             <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
-            <!-- Audio element: src will be set by JavaScript based on user selection -->
-            <audio id="myAudio" src="" preload="auto" class="w-full"></audio>
+            <!-- Audio element: Directly linking to the MP3 in your GitHub repo -->
+            <!-- IMPORTANT: If audio fails, copy the EXACT "Raw" URL for your audio.mp3 file from GitHub and paste it here. -->
+            <audio id="myAudio" src="https://raw.githubusercontent.com/imelijah88/aDayInTheirShoes/main/audio.mp3" preload="auto" class="w-full"></audio>
 
             <!-- Play/Pause Button -->
-            <button id="playPauseButton" class="interactive-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg" disabled>
+            <button id="playPauseButton" class="interactive-button py-3 px-6 rounded-full text-lg">
                 Play Audio
             </button>
 
             <!-- Display area for messages (e.g., error messages) -->
-            <div id="messageBox" class="text-sm text-gray-700 mt-2 text-center w-full"></div>
+            <div id="messageBox" class="text-base text-gray-700 mt-2 text-center w-full min-h-[2rem] flex items-center justify-center"></div>
         </div>
     </div>
 
@@ -119,10 +117,7 @@
         const playPauseButton = document.getElementById('playPauseButton');
         const messageBox = document.getElementById('messageBox');
         const pdfViewer = document.getElementById('pdfViewer');
-        const pdfFileInput = document.getElementById('pdfFileInput');
-        const audioFileInput = document.getElementById('audioFileInput');
-        const pdfFileNameDisplay = document.getElementById('pdfFileName');
-        const audioFileNameDisplay = document.getElementById('audioFileName');
+        const fullscreenButton = document.getElementById('fullscreenButton');
 
         let isPlaying = false; // Track the current playback state
 
@@ -139,60 +134,41 @@
             }
         }
 
-        // Handle PDF file selection
-        pdfFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.type === 'application/pdf') {
-                    const fileURL = URL.createObjectURL(file);
-                    pdfViewer.src = fileURL;
-                    pdfFileNameDisplay.textContent = `PDF: ${file.name}`;
-                    showMessage(`PDF "${file.name}" loaded successfully.`, 'info');
-                } else {
-                    showMessage('Please select a valid PDF file.', 'error');
-                    pdfFileNameDisplay.textContent = 'Invalid file type';
-                    pdfViewer.src = ''; // Clear iframe if invalid file
-                }
+        // Fullscreen toggle for PDF viewer
+        fullscreenButton.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
             } else {
-                pdfFileNameDisplay.textContent = 'No PDF selected';
-                pdfViewer.src = '';
-                showMessage('No PDF file selected.', 'info');
+                pdfViewer.requestFullscreen().catch(err => {
+                    showMessage(`Error attempting full-screen: ${err.message} (Your browser might block full-screen without a direct user gesture).`, 'error');
+                    console.error("Fullscreen error:", err);
+                });
             }
         });
 
-        // Handle Audio file selection
-        audioFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.type === 'audio/mpeg' || file.type === 'audio/mp3') { // Common MP3 MIME types
-                    const fileURL = URL.createObjectURL(file);
-                    myAudio.src = fileURL;
-                    audioFileNameDisplay.textContent = `MP3: ${file.name}`;
-                    // Attempt to load metadata to enable play button
-                    myAudio.load();
-                    showMessage(`MP3 "${file.name}" selected. Loading audio...`, 'info');
-                } else {
-                    showMessage('Please select a valid MP3 file.', 'error');
-                    audioFileNameDisplay.textContent = 'Invalid file type';
-                    myAudio.src = ''; // Clear audio if invalid file
-                    playPauseButton.disabled = true;
-                }
+        // Update button text when fullscreen mode changes
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                fullscreenButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span>Exit Full Screen</span>
+                `;
             } else {
-                audioFileNameDisplay.textContent = 'No MP3 selected';
-                myAudio.src = '';
-                playPauseButton.disabled = true;
-                showMessage('No MP3 file selected.', 'info');
+                fullscreenButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                    </svg>
+                    <span>Full Screen PDF</span>
+                `;
             }
         });
 
         // Event listener for the play/pause button
         playPauseButton.addEventListener('click', async () => {
-            if (playPauseButton.disabled) {
-                showMessage("Cannot play: No valid audio file loaded.", 'error');
-                return;
-            }
             if (!myAudio.src) {
-                showMessage("Cannot play: No audio file has been selected yet.", 'error');
+                showMessage("Audio source not set. Cannot play.", 'error'); // More direct message
                 return;
             }
 
@@ -213,12 +189,13 @@
                 if (error.name === "NotAllowedError") {
                     specificMessage = "Autoplay prevented. Please click 'Play Audio' to start.";
                 } else if (error.name === "AbortError") {
-                    specificMessage = "Playback aborted (e.g., by another play request).";
+                    specificMessage = "Playback aborted.";
                 } else if (error.name === "NotFoundError" || myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
-                    specificMessage = `Audio file not found or could not be loaded: ${myAudio.currentSrc}. Please select a valid MP3 file.`;
+                    specificMessage = `Audio file not found or could not be loaded from "${myAudio.currentSrc}". Please check the GitHub file path and accessibility.`;
                 }
                 showMessage(`Audio Error: ${specificMessage}`, 'error');
                 console.error("Audio playback error:", error);
+                console.error("Audio current source:", myAudio.currentSrc); // Log the actual source being used
                 isPlaying = false;
                 playPauseButton.textContent = 'Play Audio';
             }
@@ -229,7 +206,6 @@
             isPlaying = true;
             playPauseButton.textContent = 'Pause Audio';
             showMessage('Audio playing...');
-            playPauseButton.disabled = false;
         });
 
         myAudio.addEventListener('pause', () => {
@@ -246,40 +222,57 @@
 
         myAudio.addEventListener('loadedmetadata', () => {
             console.log("Audio metadata loaded. Duration:", myAudio.duration);
-            showMessage('Audio file loaded. Click "Play Audio" to start.');
-            playPauseButton.disabled = false; // Enable play button once metadata is loaded
+            showMessage('Audio loaded. Click "Play Audio" to start.');
         });
 
         myAudio.addEventListener('error', (e) => {
             const error = e.target.error;
             let errorMessage = `An audio error occurred (Code: ${error ? error.code : 'unknown'}).`;
+            console.error("Audio element error event triggered:", e);
+            console.error("MediaError object:", error);
+            console.error("Audio current source on error:", myAudio.currentSrc); // Log the source when error occurs
+
             if (error) {
                 switch (error.code) {
                     case MediaError.MEDIA_ERR_ABORTED:
-                        errorMessage = 'Audio load aborted by user.';
+                        errorMessage = 'Audio load aborted.';
                         break;
                     case MediaError.MEDIA_ERR_NETWORK:
-                        errorMessage = 'A network error prevented audio download.';
+                        errorMessage = 'A network error prevented audio download. Check your internet connection.';
                         break;
                     case MediaError.MEDIA_ERR_DECODE:
                         errorMessage = 'The audio could not be decoded. Ensure it\'s a valid MP3 file.';
                         break;
                     case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = `The selected audio format is not supported or the file could not be accessed. Please select a valid MP3.`;
+                        errorMessage = `The audio format is not supported or the file could not be accessed from "${myAudio.currentSrc}". Please check the GitHub file path and its format.`;
                         break;
+                    default:
+                        errorMessage = `An unspecified audio error occurred (Code: ${error.code}).`;
+                        if (error.message) {
+                            errorMessage += ` Message: ${error.message}`;
+                        }
                 }
+            } else {
+                errorMessage = 'An unknown audio error occurred with no specific error object. This often indicates the audio file was not found or accessible.';
             }
+
             showMessage(`Audio Load Error: ${errorMessage}`, 'error');
-            console.error("Audio element error:", error);
+            console.error("Audio element error details:", errorMessage);
             isPlaying = false;
             playPauseButton.textContent = 'Play Audio';
-            playPauseButton.disabled = true; // Disable button on error
         });
 
-        // Initial state: disable play button until an audio file is selected and loaded
+        // Initial load check (with a small delay to ensure DOM is ready)
         window.addEventListener('load', () => {
-            playPauseButton.disabled = true;
-            showMessage('Please select your PDF and MP3 files to begin.');
+            setTimeout(() => {
+                console.log("Window loaded. Attempting to load files from GitHub.");
+                console.log("PDF Viewer source:", pdfViewer.src);
+                console.log("Audio Player source:", myAudio.src);
+
+                // No manual selection, so directly try to load and show messages
+                myAudio.load(); // Explicitly try to load the audio
+                showMessage('Attempting to load presentation and audio from GitHub...');
+            }, 100); // Small delay
         });
     </script>
 </body>
