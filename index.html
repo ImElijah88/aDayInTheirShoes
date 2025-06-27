@@ -226,8 +226,8 @@
 
             <!-- Custom Audio Controls -->
             <div class="w-full flex items-center space-x-4">
-                <button id="playPauseButton" class="primary-button p-2 w-12 h-12 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <button id="playPauseButton" class="primary-button p-2 w-20 h-20 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
                     </svg>
                     <span class="sr-only">Play/Pause Audio</span>
@@ -385,8 +385,9 @@
          * @param {number} newPageNum The target page number.
          */
         function goToPage(newPageNum) {
-            if (newPageNum < 1 || newPageNum > pdfDoc.numPages) {
-                console.warn(`Attempted to go to invalid page: ${newPageNum}`);
+            console.log(`Attempting to go to PDF page: ${newPageNum}`); // Log page navigation
+            if (pdfDoc && (newPageNum < 1 || newPageNum > pdfDoc.numPages)) {
+                console.warn(`Attempted to go to invalid page: ${newPageNum}. Total pages: ${pdfDoc.numPages}`);
                 return;
             }
             if (newPageNum === currentPageNum && !pageRendering) {
@@ -445,10 +446,10 @@
          * @param {number} time The time in seconds.
          * @returns {string} Formatted time string.
          */
-        function formatTimeForDisplay(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = Math.floor(time % 60);
-            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        function formatTimeForDisplay(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
         // --- Synchronization Logic ---
@@ -516,6 +517,7 @@
 
         // Audio Play/Pause Button
         playPauseButton.addEventListener('click', async () => {
+            console.log('Play/Pause button clicked'); // Log button click
             if (!myAudio.src) {
                 showMessage("Audio not loaded. Please ensure 'audio.mp3' is present.", 'error');
                 return;
@@ -632,7 +634,7 @@
             showMessage('Initializing presentation...');
             // Load the PDF from a relative path (assumes GitHub Pages)
             // IMPORTANT: Make sure this PDF filename matches your file in the repo root.
-            loadPdf('./presentation.pdf'); // Updated PDF filename based on user's GitHub repo image.
+            loadPdf('./presentation.pdf'); // Current PDF filename based on your GitHub repo.
             // Audio will attempt to load based on its src="./audio.mp3"
         });
     </script>
