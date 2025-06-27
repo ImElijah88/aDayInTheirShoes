@@ -315,7 +315,7 @@
          * @param {number} seconds The time in seconds.
          * @returns {string} Formatted time string (MM:SS).
          */
-        function formatTime(seconds) {
+        function formatTimeForDisplay(seconds) {
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = Math.floor(seconds % 60);
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
@@ -433,7 +433,7 @@
                 showMessage('PDF loaded. Ready to play audio!');
             } catch (reason) {
                 console.error('Error loading PDF:', reason);
-                showMessage(`Error loading PDF from '${pdfUrl}': ${reason.message || 'Unknown error'}. Please ensure 'presentation.pdf' (or your PDF file's name) is in your GitHub Pages root.`, 'error');
+                showMessage(`Error loading PDF from '${pdfUrl}': ${reason.message || 'Unknown error'}. Please ensure 'presentation.pdf' is correctly named and in your GitHub Pages root.`, 'error');
                 pdfLoadingOverlay.style.display = 'none';
             }
         }
@@ -631,8 +631,8 @@
             playPauseButton.disabled = true; // Initially disable play button
             showMessage('Initializing presentation...');
             // Load the PDF from a relative path (assumes GitHub Pages)
-            // IMPORTANT: Make sure 'presentation.pdf' is the exact name of your PDF file in the repo root.
-            loadPdf('./presentation.pdf'); // Changed PDF to its original name.
+            // IMPORTANT: Make sure this PDF filename matches your file in the repo root.
+            loadPdf('./presentation.pdf'); // Updated PDF filename based on user's GitHub repo image.
             // Audio will attempt to load based on its src="./audio.mp3"
         });
     </script>
