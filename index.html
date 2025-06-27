@@ -108,7 +108,7 @@
         
         <p>Welcome, investors and sponsors! I'm Elijah, and I'm thrilled to share our vision with you.</p>
         <p>Listen to the audio overview of our presentation:</p>
-        <audio controls>
+        <audio id="presentationAudio" controls> <!-- Added an ID for JavaScript access -->
             <!-- Corrected audio source to match the uploaded filename -->
             <source src="dayinthershoes.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
@@ -119,5 +119,38 @@
         
         <p class="note">If the PDF does not load, your browser may not support embedding PDFs directly. You can download it to view.</p>
     </div>
+
+    <script>
+        // JavaScript for basic audio error logging
+        document.addEventListener('DOMContentLoaded', () => {
+            const audioPlayer = document.getElementById('presentationAudio');
+
+            // Listen for errors on the audio element
+            audioPlayer.addEventListener('error', (e) => {
+                let errorMessage = "An unknown audio error occurred.";
+                switch (e.target.error.code) {
+                    case e.target.error.MEDIA_ERR_ABORTED:
+                        errorMessage = "Audio playback was aborted.";
+                        break;
+                    case e.target.error.MEDIA_ERR_NETWORK:
+                        errorMessage = "A network error caused the audio download to fail.";
+                        break;
+                    case e.target.error.MEDIA_ERR_DECODE:
+                        errorMessage = "Audio playback was interrupted due to a decoding error (corrupt/unsupported file).";
+                        break;
+                    case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        errorMessage = "The audio format is not supported or the file was not found.";
+                        break;
+                }
+                console.error("Audio Error:", errorMessage, "File:", audioPlayer.querySelector('source').src);
+                console.log("Please check the console for more details. Ensure the audio file 'dayinthershoes.mp3' is correctly uploaded and named in your GitHub repository.");
+            });
+
+            // Optional: Try to load/play after a short delay to catch initial load issues
+            audioPlayer.load();
+            // You can uncomment the line below if you want it to try playing automatically (though user interaction is usually required)
+            // audioPlayer.play().catch(error => console.log("Autoplay prevented:", error.message));
+        });
+    </script>
 </body>
 </html>
