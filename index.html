@@ -60,11 +60,11 @@
         <!-- Audio Player Controls -->
         <div class="w-full max-w-sm flex flex-col items-center space-y-4 pt-6">
             <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
-            <!-- Audio element: Using your local audio file 'A Day In Their Shoes.mp3' -->
-            <!-- IMPORTANT: Please ensure this file is named EXACTLY 'A Day In Their Shoes.mp3' (including spaces and capitalization) -->
+            <!-- Audio element: Using your local audio file, now named 'audio.mp3' -->
+            <!-- IMPORTANT: Please ensure your MP3 file is named EXACTLY 'audio.mp3' (all lowercase, no spaces) -->
             <!-- and is located in the SAME directory as this HTML file. -->
             <!-- If issues persist, consider converting the MP3 to ensure its format is valid. -->
-            <audio id="myAudio" src="A Day In Their Shoes.mp3" preload="auto" class="w-full"></audio>
+            <audio id="myAudio" src="audio.mp3" preload="auto" class="w-full"></audio>
 
             <!-- Play/Pause Button -->
             <button id="playPauseButton" class="play-pause-button bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-lg">
@@ -180,7 +180,7 @@
                         break;
                     case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
                         errorMessage = `The audio format is not supported or the source "${myAudio.src}" was not found. ` +
-                                       `Please **double-check the file name (including capitalization and spaces)** and ensure it is in the **same directory** as this HTML file. ` +
+                                       `Please **double-check the file name (currently 'audio.mp3')** and ensure it is in the **same directory** as this HTML file. ` +
                                        `Also, ensure the MP3 file itself is not corrupted. If these checks are correct, consider converting your MP3 file to a new one using an online converter.`;
                         break;
                     default:
