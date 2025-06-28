@@ -96,7 +96,6 @@
 
         /* Secondary button for fullscreen with distinct color */
         .secondary-button {
-            /* @apply primary-button; /* Inherit base button styles */ /* Replaced with explicit properties to prevent recursion from `@apply` */
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
             border: none;
@@ -349,11 +348,9 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
         // --- CONFIGURATION: SET YOUR GITHUB PAGES BASE PATH HERE ---
-        // If your GitHub Pages URL is like https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/,
-        // then set basePath to '/YOUR_REPO_NAME'.
-        // If your GitHub Pages URL is like https://YOUR_USERNAME.github.io/ (served from the root),
-        // then leave basePath as '' (empty string).
-        const basePath = ''; // <<<<<<< IMPORTANT: CUSTOMIZE THIS FOR YOUR GITHUB PAGES SETUP <<<<<<<
+        // Your GitHub Pages URL: https://imelijah88.github.io/aDayInTheirShoes/
+        // This means the repository name 'aDayInTheirShoes' is part of the URL path.
+        const basePath = '/aDayInTheirShoes'; // <<<<<<< CORRECTED BASE PATH <<<<<<<
 
 
         // --- DOM Element References ---
