@@ -9,7 +9,58 @@
     <!-- PDF.js CDN for reliable PDF rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        /* Custom styles for buttons with gradients and shadows */
+        /* Base styles for the entire page body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #e0f2fe, #c3dafe); /* Light blue to light indigo gradient */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        /* Main container for the presentation, mimicking a card */
+        .presentation-card {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* Rounded corners for the card */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* Larger shadow */
+            padding: 2rem;
+            width: 100%;
+            max-width: 72rem; /* Max-width of 6xl (1152px) for desktop */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem; /* Space between sections */
+        }
+
+        /* Header styling */
+        h1 {
+            font-size: 2.5rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #1f2937; /* gray-900 */
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.125rem; /* text-lg */
+            color: #4b5563; /* gray-600 */
+            text-align: center;
+            max-width: 42rem; /* max-w-2xl */
+        }
+
+        /* Section headings */
+        h2 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* gray-700 */
+            margin-bottom: 0.75rem;
+            text-align: center; /* Center presentation document heading */
+        }
+
+        /* Custom buttons with gradients and shadows */
         .primary-button {
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -24,6 +75,7 @@
             justify-content: center;
             gap: 0.5rem;
             white-space: nowrap; /* Prevent text wrapping */
+            min-width: 6rem; /* Ensure consistent width for smaller buttons */
         }
         .primary-button:hover {
             transform: translateY(-3px);
@@ -57,37 +109,52 @@
 
         /* Styling for info/error messages */
         .message-box {
-            @apply text-base text-gray-700 font-normal px-4 py-2 rounded-lg bg-gray-100 border border-gray-300;
+            background-color: #f3f4f6; /* gray-100 */
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            color: #374151; /* gray-700 */
+            font-size: 1rem; /* text-base */
+            font-weight: 400; /* font-normal */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
             min-height: 2.5rem; /* Ensure consistent height */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            width: 100%; /* Full width */
+            margin-top: 1rem; /* mt-4 */
         }
         .error-message {
-            @apply text-base text-red-700 font-bold px-4 py-2 rounded-lg bg-red-100 border border-red-400;
+            background-color: #fee2e2; /* red-100 */
+            border: 1px solid #fca5a5; /* red-400 */
+            color: #b91c1c; /* red-700 */
+            font-weight: 700; /* font-bold */
         }
 
         /* PDF viewer container and canvas styling */
         .pdf-container {
-            position: relative;
+            position: relative; /* Crucial for absolute positioning of controls */
             width: 100%;
             min-height: 400px;
-            height: 70vh; /* Responsive height */
+            height: 70vh; /* Responsive height for PDF viewer */
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
             background-color: #ffffff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden; /* Hide scrollbars of container, canvas handles own scrolling */
-            display: flex;
+            overflow: hidden; /* Hide scrollbars of container */
+            display: flex; /* Flex container to center canvas vertically and horizontally */
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Allow content to stack if needed */
+            flex-direction: column; /* Allows canvas to stack above controls if controls were inside */
         }
         .pdf-canvas {
             display: block;
-            max-width: 100%; /* Ensure canvas scales down if PDF is wider */
-            height: 100%; /* Fill container height, overflow will be handled by overflow:hidden on container */
+            max-width: 100%;
+            max-height: 100%;
+            height: auto; /* Ensures aspect ratio is maintained */
+            width: auto;  /* Ensures aspect ratio is maintained */
+            object-fit: contain; /* Scales content to fit, preserving aspect ratio */
+            margin: auto; /* Centers the canvas within its flex container */
         }
         .pdf-loading-overlay {
             position: absolute;
@@ -126,14 +193,65 @@
             max-height: 100vh;
             border-radius: 0;
             background-color: #000; /* Black background in fullscreen */
-            overflow: auto; /* Allow scrolling in fullscreen if content is larger */
+            overflow: hidden; /* Hide main body scroll in fullscreen */
+            display: flex; /* Ensure flex for centering PDF */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
+        /* Canvas within fullscreen should also respect its parent */
         .pdf-container:fullscreen .pdf-canvas, .pdf-container:-webkit-full-screen .pdf-canvas, .pdf-container:-moz-full-screen .pdf-canvas, .pdf-container:-ms-fullscreen .pdf-canvas {
             width: auto; /* Allow natural width */
             max-width: 100%; /* Constrain to screen width */
             height: auto; /* Allow natural height */
             max-height: 100%; /* Constrain to screen height */
             margin: auto; /* Center canvas */
+            object-fit: contain; /* Ensure PDF fits without cropping */
+        }
+
+        /* Fullscreen controls overlay */
+        .fullscreen-controls-overlay {
+            position: fixed; /* Use fixed to ensure it stays on top of content in fullscreen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none; /* Allows clicks to pass through if no button is hovered */
+            z-index: 20; /* Above PDF overlay */
+            padding: 1rem;
+            box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0)); /* Fading gradient top */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease-in-out;
+        }
+        .fullscreen-controls-overlay.visible {
+            opacity: 1;
+            pointer-events: auto; /* Enable clicks when visible */
+        }
+        .fullscreen-controls-overlay .control-group {
+            display: flex;
+            gap: 1rem; /* Spacing between buttons */
+            pointer-events: auto; /* Re-enable pointer events for buttons within overlay */
+        }
+        .fullscreen-hint {
+            position: fixed; /* Fixed position for overlay hint */
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+            z-index: 21; /* Above overlay */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .fullscreen-hint.visible {
+            opacity: 1;
         }
 
         /* Audio progress bar styling */
@@ -165,11 +283,113 @@
             cursor: pointer;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
         }
+
+        /* Main control bar styling (now floating over PDF) */
+        #mainControlBar {
+            position: absolute; /* Positioned relative to .pdf-container */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(17, 24, 39, 0.8); /* Dark background with 80% opacity */
+            backdrop-filter: blur(8px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(8px); /* Safari support */
+            padding: 1rem;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow subtly above it */
+            z-index: 15; /* Above canvas but below fullscreen overlay */
+            border-bottom-left-radius: 0.75rem; /* Match pdf-container border-radius */
+            border-bottom-right-radius: 0.75rem;
+            display: flex; /* Flexbox for internal layout */
+            flex-direction: column; /* Stack vertically by default for small screens */
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem; /* Space between rows/elements */
+            width: 100%; /* Span the width of pdfContainer */
+        }
+        @media (min-width: 640px) { /* Small screens and up (sm breakpoint) */
+            #mainControlBar {
+                flex-direction: row; /* Layout horizontally on larger screens */
+                padding-left: 2rem; /* More padding on sides */
+                padding-right: 2rem;
+                gap: 2rem; /* More space between main groups */
+            }
+        }
+
+        /* Specific styling for elements within the main control bar */
+        #mainControlBar .primary-button,
+        #mainControlBar .secondary-button {
+            background: rgba(59, 130, 246, 0.9); /* Slightly more opaque blue */
+            box-shadow: none; /* Remove individual button shadows as bar has one */
+            transition: background 0.2s ease-in-out;
+        }
+        #mainControlBar .primary-button:hover,
+        #mainControlBar .secondary-button:hover {
+            background: rgba(37, 99, 235, 0.9); /* Darker blue on hover */
+            transform: none; /* No vertical lift on hover */
+        }
+        #mainControlBar .primary-button:active,
+        #mainControlBar .secondary-button:active {
+            background: rgba(30, 64, 175, 0.9); /* Even darker blue on active */
+        }
+        #mainControlBar .primary-button:disabled,
+        #mainControlBar .secondary-button:disabled {
+            background: rgba(156, 163, 175, 0.5); /* Gray and transparent for disabled */
+        }
+
+        #mainControlBar #currentTime,
+        #mainControlBar #totalTime {
+            color: #e5e7eb; /* Lighter gray for time displays */
+        }
+        #mainControlBar #pageInfo {
+            color: #f3f4f6; /* Even lighter gray for page info */
+            font-size: 1rem; /* text-base */
+        }
+        /* Responsive adjustments for page info text on small screens */
+        @media (max-width: 639px) { /* Below sm breakpoint */
+            #prevPage span, #nextPage span, #fullscreenButton span {
+                display: none; /* Hide text on small screens, only show icon */
+            }
+            #prevPage, #nextPage {
+                min-width: 3rem; /* Make buttons smaller, icon-only */
+                padding: 0.5rem;
+            }
+            #fullscreenButton {
+                 min-width: 3rem; /* Make buttons smaller, icon-only */
+                padding: 0.5rem;
+            }
+            #playPauseButton {
+                width: 4rem; /* Smaller play button on tiny screens */
+                height: 4rem;
+                padding: 0.5rem;
+            }
+        }
+
+        /* Flex item adjustments for the different parts of the control bar */
+        .control-group-audio {
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* Space between play button and progress bar */
+            flex-grow: 1; /* Allow progress bar to grow */
+            width: 100%; /* Occupy full width on small screens */
+            max-width: 28rem; /* Cap width for consistency on large screens */
+        }
+        @media (min-width: 640px) {
+             .control-group-audio {
+                width: auto; /* Let content dictate width on large screens */
+             }
+        }
+        .control-group-navigation {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Tighter spacing for navigation buttons */
+            flex-shrink: 0; /* Prevent shrinking */
+            white-space: nowrap; /* Keep elements on one line */
+        }
+
     </style>
 </head>
 <body class="font-inter bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-6xl flex flex-col items-center space-y-8">
+    <div class="presentation-card">
         <h1 class="text-4xl font-extrabold text-gray-900 mb-4 text-center">My Amazing Presentation</h1>
         <p class="text-lg text-gray-600 text-center max-w-2xl">
             This live presentation features a PDF document and synchronized audio.
@@ -178,80 +398,115 @@
 
         <!-- PDF Viewer Section -->
         <div class="w-full flex flex-col items-center mt-6">
-            <div class="flex justify-between items-center w-full mb-3 px-2 flex-wrap gap-2">
-                <h2 class="text-xl font-semibold text-gray-700">Presentation Document</h2>
-                <div class="flex items-center space-x-2 flex-wrap gap-2 justify-end">
-                    <!-- Page Navigation -->
-                    <button id="prevPage" class="primary-button text-sm" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Prev
-                    </button>
-                    <span id="pageInfo" class="text-lg font-semibold text-gray-700 px-2 flex items-center">
-                        Page 1 of 1
-                    </span>
-                    <button id="nextPage" class="primary-button text-sm" disabled>
-                        Next
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <!-- Full Screen Button -->
-                    <button id="fullscreenButton" class="secondary-button text-sm ml-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
-                        </svg>
-                        <span>Full Screen</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- PDF Container with Canvas for rendering -->
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation Document</h2>
+            <!-- PDF Container with Canvas for rendering and floating controls -->
             <div id="pdfContainer" class="pdf-container">
                 <div id="pdfLoadingOverlay" class="pdf-loading-overlay">
                     <div class="pdf-loading-spinner"></div>
                     <span>Loading PDF...</span>
                 </div>
                 <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
-            </div>
-        </div>
+                <!-- HIDDEN AUDIO ELEMENT - CRITICAL FOR PLAYBACK -->
+                <!-- The audio element was missing in previous versions, causing "null" errors. -->
+                <audio id="myAudio" preload="auto">
+                    Your browser does not support the audio element. Please ensure 'audio.mp3' is in the root and try a different browser.
+                </audio>
 
-        <!-- Audio Player Controls -->
-        <div class="w-full max-w-xl flex flex-col items-center space-y-4 pt-6">
-            <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
-            <!-- Audio element: Relative path for GitHub Pages -->
-            <!-- Ensure 'audio.mp3' is in the root of your GitHub Pages branch -->
-            <audio id="myAudio" src="./audio.mp3" preload="auto" class="w-full hidden"></audio> <!-- Hidden, using custom controls -->
+                <!-- Fullscreen Controls Overlay (hidden by default, appears when in actual fullscreen mode) -->
+                <div id="fullscreenControlsOverlay" class="fullscreen-controls-overlay">
+                    <div class="control-group">
+                        <button id="fsPrevPage" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span class="sr-only">Previous Page</span>
+                        </button>
+                    </div>
+                    <div class="control-group flex-grow justify-center">
+                        <button id="fsPlayPauseButton" class="primary-button p-2 w-20 h-20 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
+                            </svg>
+                            <span class="sr-only">Play/Pause Audio</span>
+                        </button>
+                    </div>
+                    <div class="control-group">
+                        <button id="fsNextPage" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                            <span class="sr-only">Next Page</span>
+                        </button>
+                    </div>
+                </div>
 
-            <!-- Custom Audio Controls -->
-            <div class="w-full flex items-center space-x-4">
-                <button id="playPauseButton" class="primary-button p-2 w-20 h-20 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
-                    </svg>
-                    <span class="sr-only">Play/Pause Audio</span>
-                </button>
-                <div class="flex-grow flex flex-col items-center space-y-1">
-                    <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full">
-                    <div class="flex justify-between w-full text-sm text-gray-600">
-                        <span id="currentTime">0:00</span>
-                        <span id="totalTime">0:00</span>
+                <!-- Main Control Bar (now floating at the bottom of the PDF container) -->
+                <div id="mainControlBar">
+                    <!-- Audio Controls Group -->
+                    <div class="control-group-audio">
+                        <button id="playPauseButton" class="primary-button p-2 w-16 h-16 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg>
+                            <span class="sr-only">Play/Pause Audio</span>
+                        </button>
+
+                        <div class="flex-grow flex flex-col items-center space-y-1">
+                            <!-- Audio Progress Bar -->
+                            <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full accent-blue-400">
+                            <div class="flex justify-between w-full text-sm">
+                                <span id="currentTime">0:00</span>
+                                <span id="totalTime">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page Navigation and Full Screen Buttons Group -->
+                    <div class="control-group-navigation">
+                        <button id="prevPage" class="primary-button text-sm px-4 py-2" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </button>
+                        <span id="pageInfo" class="text-lg font-semibold control-bar-page-info">
+                            Page 1 of 1
+                        </span>
+                        <button id="nextPage" class="primary-button text-sm px-4 py-2" disabled>
+                            <span class="hidden sm:inline">Next</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <button id="fullscreenButton" class="secondary-button text-sm px-4 py-2 ml-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                            </svg>
+                            <span class="hidden sm:inline">Full Screen</span>
+                        </button>
                     </div>
                 </div>
             </div>
+            <!-- Fullscreen hint positioned relative to body, not container -->
+            <div id="fullscreenHint" class="fullscreen-hint">Press Esc to exit Full Screen</div>
+        </div>
 
-            <!-- Display area for messages -->
-            <div id="messageBox" class="w-full message-box">
-                Initializing presentation...
-            </div>
+        <!-- Display area for messages (outside the PDF section to prevent layout shifts) -->
+        <div id="messageBox" class="w-full message-box mt-4">
+            Initializing presentation...
         </div>
     </div>
 
-    <script>
+    <script defer>
         // Set workerSrc for PDF.js - IMPORTANT!
-        // This tells PDF.js where to find its worker script for rendering.
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        // --- CONFIGURATION: SET YOUR GITHUB PAGES BASE PATH HERE ---
+        // If your GitHub Pages URL is like https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/,
+        // then set basePath to '/YOUR_REPO_NAME'.
+        // If your GitHub Pages URL is like https://YOUR_USERNAME.github.io/ (served from the root),
+        // then leave basePath as '' (empty string).
+        const basePath = ''; // <<<<<<< IMPORTANT: CUSTOMIZE THIS FOR YOUR GITHUB PAGES SETUP <<<<<<<
+
 
         // --- DOM Element References ---
         const pdfContainer = document.getElementById('pdfContainer');
@@ -261,36 +516,61 @@
         const nextPageButton = document.getElementById('nextPage');
         const pageInfoSpan = document.getElementById('pageInfo');
         const fullscreenButton = document.getElementById('fullscreenButton');
-        const myAudio = document.getElementById('myAudio');
+        const myAudio = document.getElementById('myAudio'); 
         const playPauseButton = document.getElementById('playPauseButton');
         const audioProgressBar = document.getElementById('audioProgressBar');
         const currentTimeSpan = document.getElementById('currentTime');
         const totalTimeSpan = document.getElementById('totalTime');
         const messageBox = document.getElementById('messageBox');
+        const mainControlBar = document.getElementById('mainControlBar'); 
+
+        // Fullscreen specific controls (these are the ones that appear in fullscreen mode)
+        const fullscreenControlsOverlay = document.getElementById('fullscreenControlsOverlay');
+        const fsPrevPageButton = document.getElementById('fsPrevPage');
+        const fsNextPageButton = document.getElementById('fsNextPage');
+        const fsPlayPauseButton = document.getElementById('fsPlayPauseButton');
+        const fullscreenHint = document.getElementById('fullscreenHint');
+
 
         // --- Global State Variables ---
-        let pdfDoc = null; // Stores the PDF document object
-        let currentPageNum = 1; // Current page number being displayed
-        let pageRendering = false; // Flag to prevent multiple render operations at once
-        let pageNumPending = null; // Stores a page number if rendering was requested while another was in progress
+        let pdfDoc = null; 
+        let currentPageNum = 1; 
+        let pageRendering = false; 
+        let pageNumPending = null; 
 
-        let isAudioPlaying = false; // Tracks the current playback state of the audio
+        let isAudioPlaying = false; 
+        let fullscreenControlsTimer = null; 
+
+        // Flag to temporarily disable automatic PDF sync when user manually navigates
+        let manualOverrideActive = false;
+        let manualOverrideTimer = null;
+        const MANUAL_OVERRIDE_DURATION = 2000; 
+
 
         // --- Synchronization Points (Customize these for your presentation!) ---
         // This array defines when each PDF page should appear based on audio time.
         // Format: { time: <seconds>, page: <page_number> }
-        // Example: { time: 0, page: 1 } means Page 1 shows at 0 seconds.
-        //          { time: 15, page: 2 } means Page 2 shows at 15 seconds into the audio.
-        // Add more entries as needed for your presentation.
+        // IMPORTANT: Customize these exact timings to match your 18-page PDF and 5-minute audio.
+        // The current values are placeholders. Distribute them evenly or based on your narration.
         const syncPoints = [
             { time: 0, page: 1 },
-            { time: 10, page: 2 },  // Example: Change to page 2 at 10 seconds
-            { time: 25, page: 3 },  // Example: Change to page 3 at 25 seconds
-            { time: 40, page: 4 },  // Example: Change to page 4 at 40 seconds
-            { time: 55, page: 5 },  // Example: Change to page 5 at 55 seconds
-            // Add more sync points as your presentation progresses
-            // { time: 70, page: 6 },
-            // { time: 85, page: 7 },
+            { time: 16, page: 2 },  // Approx. 16.67 seconds per page for 18 pages over 5 minutes (300s)
+            { time: 32, page: 3 },
+            { time: 48, page: 4 },
+            { time: 64, page: 5 },
+            { time: 80, page: 6 },
+            { time: 96, page: 7 },
+            { time: 112, page: 8 },
+            { time: 128, page: 9 },
+            { time: 144, page: 10 },
+            { time: 160, page: 11 },
+            { time: 176, page: 12 },
+            { time: 192, page: 13 },
+            { time: 208, page: 14 },
+            { time: 224, page: 15 },
+            { time: 240, page: 16 },
+            { time: 256, page: 17 },
+            { time: 280, page: 18 } 
         ];
 
         // --- Utility Functions ---
@@ -305,8 +585,10 @@
             messageBox.classList.remove('info-message', 'error-message');
             if (type === 'error') {
                 messageBox.classList.add('error-message');
+                messageBox.classList.remove('info-message');
             } else {
                 messageBox.classList.add('info-message');
+                messageBox.classList.remove('error-message');
             }
         }
 
@@ -321,6 +603,28 @@
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
+        // --- Fullscreen Controls Visibility ---
+
+        /**
+         * Shows the fullscreen controls and resets the auto-hide timer.
+         */
+        function showFullscreenControls() {
+            if (document.fullscreenElement) {
+                fullscreenControlsOverlay.classList.add('visible');
+                fullscreenHint.classList.add('visible');
+                clearTimeout(fullscreenControlsTimer);
+                fullscreenControlsTimer = setTimeout(hideFullscreenControls, 3000); 
+            }
+        }
+
+        /**
+         * Hides the fullscreen controls.
+         */
+        function hideFullscreenControls() {
+            fullscreenControlsOverlay.classList.remove('visible');
+            fullscreenHint.classList.remove('visible');
+        }
+
         // --- PDF.js Functions ---
 
         /**
@@ -328,29 +632,34 @@
          * @param {number} num The page number to render.
          */
         async function renderPage(num) {
-            // Prevent rendering if already rendering or page number is invalid
-            if (pageRendering || !pdfDoc || num < 1 || num > pdfDoc.numPages) {
-                pageNumPending = num; // Queue if busy or invalid, try again later
+            console.log(`[PDF] Attempting to render page: ${num}`);
+            if (!pdfDoc || num < 1 || num > pdfDoc.numPages) {
+                console.warn(`[PDF] Invalid page number or PDF not loaded: ${num}`);
+                if (!pdfDoc) showMessage("PDF document not loaded yet.", "error");
+                return;
+            }
+
+            if (pageRendering) {
+                pageNumPending = num;
+                console.log(`[PDF] Page rendering in progress, queuing page ${num}.`);
                 return;
             }
 
             pageRendering = true;
-            pdfLoadingOverlay.style.display = 'flex'; // Show loading overlay
+            pdfLoadingOverlay.style.display = 'flex'; 
 
             try {
                 const page = await pdfDoc.getPage(num);
                 const viewport = page.getViewport({ scale: 1 });
 
-                // Calculate scale to fit the container while maintaining aspect ratio
                 const containerWidth = pdfContainer.clientWidth;
                 const containerHeight = pdfContainer.clientHeight;
                 const widthRatio = containerWidth / viewport.width;
                 const heightRatio = containerHeight / viewport.height;
-                const scale = Math.min(widthRatio, heightRatio); // Use the smaller ratio to fit
+                const scale = Math.min(widthRatio, heightRatio); 
 
                 const scaledViewport = page.getViewport({ scale: scale });
 
-                // Set canvas dimensions to match the scaled viewport
                 pdfCanvas.height = scaledViewport.height;
                 pdfCanvas.width = scaledViewport.width;
 
@@ -359,42 +668,55 @@
                     viewport: scaledViewport,
                 };
 
-                // Render the page
                 await page.render(renderContext).promise;
-                currentPageNum = num; // Update current page number after successful render
+                currentPageNum = num; 
+                console.log(`[PDF] Successfully rendered page ${currentPageNum}`);
 
             } catch (reason) {
-                console.error('Error during PDF page rendering:', reason);
+                console.error(`[PDF] Error during PDF page rendering (${num}):`, reason);
                 showMessage(`Error rendering PDF page ${num}: ${reason.message || 'Unknown error'}.`, 'error');
             } finally {
                 pageRendering = false;
-                pdfLoadingOverlay.style.display = 'none'; // Hide loading overlay
+                pdfLoadingOverlay.style.display = 'none'; 
 
-                // If another page rendering was pending, process it now
                 if (pageNumPending !== null) {
                     const pendingNum = pageNumPending;
                     pageNumPending = null;
+                    console.log(`[PDF] Rendering queued page: ${pendingNum}`);
                     renderPage(pendingNum);
                 }
-                updatePageInfo(); // Always update page info and button states
+                updatePageInfo(); 
             }
         }
 
         /**
          * Handles navigation to a specific page number, queuing if necessary.
-         * @param {number} newPageNum The target page number.
          */
         function goToPage(newPageNum) {
-            console.log(`Attempting to go to PDF page: ${newPageNum}`); // Log page navigation
-            if (pdfDoc && (newPageNum < 1 || newPageNum > pdfDoc.numPages)) {
-                console.warn(`Attempted to go to invalid page: ${newPageNum}. Total pages: ${pdfDoc.numPages}`);
+            console.log(`[PDF] User requested to go to page: ${newPageNum}`);
+            if (!pdfDoc) {
+                showMessage("PDF not loaded yet. Cannot navigate.", "error");
                 return;
             }
+            if (newPageNum < 1 || newPageNum > pdfDoc.numPages) {
+                console.warn(`[PDF] Attempted to go to invalid page: ${newPageNum}. Total pages: ${pdfDoc.numPages}`);
+                return;
+            }
+
             if (newPageNum === currentPageNum && !pageRendering) {
-                // Already on this page and not busy rendering
+                console.log(`[PDF] Already on page ${newPageNum}, no re-render needed.`);
                 return;
             }
-            queueRenderPage(newPageNum);
+
+            manualOverrideActive = true;
+            clearTimeout(manualOverrideTimer);
+            manualOverrideTimer = setTimeout(() => {
+                manualOverrideActive = false;
+                console.log("[PDF] Manual override ended.");
+            }, MANUAL_OVERRIDE_DURATION);
+            console.log("[PDF] Manual override active.");
+
+            renderPage(newPageNum); 
         }
 
         /**
@@ -405,12 +727,18 @@
                 pageInfoSpan.textContent = `Page ${currentPageNum} of ${pdfDoc.numPages}`;
                 prevPageButton.disabled = currentPageNum <= 1;
                 nextPageButton.disabled = currentPageNum >= pdfDoc.numPages;
-                fullscreenButton.disabled = false; // Enable fullscreen if PDF is loaded
+                fullscreenButton.disabled = false; 
+
+                fsPrevPageButton.disabled = currentPageNum <= 1;
+                fsNextPageButton.disabled = currentPageNum >= pdfDoc.numPages;
+
             } else {
                 pageInfoSpan.textContent = `Page 0 of 0`;
                 prevPageButton.disabled = true;
                 nextPageButton.disabled = true;
-                fullscreenButton.disabled = true; // Disable if no PDF loaded
+                fullscreenButton.disabled = true;
+                fsPrevPageButton.disabled = true;
+                fsNextPageButton.disabled = true;
             }
         }
 
@@ -420,21 +748,24 @@
          */
         async function loadPdf(pdfUrl) {
             showMessage('Loading PDF presentation...');
-            pdfLoadingOverlay.style.display = 'flex'; // Show loading overlay
+            pdfLoadingOverlay.style.display = 'flex'; 
 
             try {
-                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                // Add a cache-busting parameter to ensure fresh load
+                const urlWithCacheBust = `${pdfUrl}?v=${Date.now()}`;
+                console.log(`[PDF Load] Attempting to load PDF from: ${urlWithCacheBust}`); // Debugging path
+                const loadingTask = pdfjsLib.getDocument(urlWithCacheBust);
                 pdfDoc = await loadingTask.promise;
+                console.log(`[PDF] Document loaded successfully. Total pages: ${pdfDoc.numPages}`);
 
-                // Initial render of the first page and update UI
-                currentPageNum = 1;
-                updatePageInfo(); // Update page info with total pages
-                await renderPage(currentPageNum); // Wait for first page to render
+                currentPageNum = 1; 
+                updatePageInfo(); 
+                await renderPage(currentPageNum); 
 
-                showMessage('PDF loaded. Ready to play audio!');
+                showMessage('PDF loaded. Attempting to load audio...');
             } catch (reason) {
-                console.error('Error loading PDF:', reason);
-                showMessage(`Error loading PDF from '${pdfUrl}': ${reason.message || 'Unknown error'}. Please ensure 'presentation.pdf' is correctly named and in your GitHub Pages root.`, 'error');
+                console.error('[PDF] Error loading PDF document:', reason);
+                showMessage(`Error loading PDF from '${pdfUrl}': ${reason.message || 'Unknown error'}. Please ensure 'presentation.pdf' is correctly named and in your GitHub Pages root, AND that the basePath is correctly set if applicable.`, 'error');
                 pdfLoadingOverlay.style.display = 'none';
             }
         }
@@ -443,8 +774,8 @@
 
         /**
          * Formats time for display (e.g., 0:00).
-         * @param {number} time The time in seconds.
-         * @returns {string} Formatted time string.
+         * @param {number} seconds The time in seconds.
+         * @returns {string} Formatted time string (MM:SS).
          */
         function formatTimeForDisplay(seconds) {
             const minutes = Math.floor(seconds / 60);
@@ -458,25 +789,26 @@
          * Updates the PDF page based on the current audio playback time.
          */
         function syncPdfToAudio() {
+            if (!pdfDoc || manualOverrideActive) {
+                return; 
+            }
+
             const currentTime = myAudio.currentTime;
-            // Find the latest sync point that is less than or equal to the current audio time
-            let targetPage = currentPageNum; // Default to current page
-            for (let i = 0; i < syncPoints.length; i++) {
+            let targetPage = currentPageNum;
+            for (let i = syncPoints.length - 1; i >= 0; i--) {
                 if (currentTime >= syncPoints[i].time) {
                     targetPage = syncPoints[i].page;
-                } else {
-                    // If current time is less than this sync point, we've passed the relevant point
-                    break;
+                    break; 
                 }
             }
-            if (targetPage !== currentPageNum) {
-                goToPage(targetPage);
+            if (targetPage !== currentPageNum) { 
+                console.log(`[Sync] Audio at ${formatTimeForDisplay(currentTime)}s, syncing to page ${targetPage}.`);
+                renderPage(targetPage);
             }
         }
 
         // --- Event Listeners ---
 
-        // PDF Navigation Buttons
         prevPageButton.addEventListener('click', () => {
             goToPage(currentPageNum - 1);
         });
@@ -484,11 +816,12 @@
             goToPage(currentPageNum + 1);
         });
 
-        // Fullscreen toggle for PDF container
         fullscreenButton.addEventListener('click', () => {
             if (document.fullscreenElement) {
+                console.log("[Fullscreen] Exiting fullscreen.");
                 document.exitFullscreen();
             } else {
+                console.log("[Fullscreen] Entering fullscreen.");
                 pdfContainer.requestFullscreen().catch(err => {
                     showMessage(`Error attempting full-screen: ${err.message}. Your browser might block full-screen without a direct user gesture.`, 'error');
                     console.error("Fullscreen error:", err);
@@ -496,30 +829,62 @@
             }
         });
 
-        // Update Fullscreen button text/icon based on state
         document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement) {
+                console.log("[Fullscreen] Fullscreen entered.");
                 fullscreenButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                     <span>Exit Full Screen</span>
                 `;
+                fullscreenControlsOverlay.classList.add('visible'); 
+                fullscreenHint.classList.add('visible');
+                showFullscreenControls(); 
+                if (mainControlBar) { 
+                    mainControlBar.style.display = 'none';
+                }
+                if (pdfDoc) { 
+                    renderPage(currentPageNum);
+                }
             } else {
+                console.log("[Fullscreen] Fullscreen exited.");
                 fullscreenButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
                     </svg>
                     <span>Full Screen</span>
                 `;
+                fullscreenControlsOverlay.classList.remove('visible'); 
+                fullscreenHint.classList.remove('visible');
+                clearTimeout(fullscreenControlsTimer); 
+                if (mainControlBar) { 
+                    mainControlBar.style.display = 'flex'; 
+                }
+                if (pdfDoc) { 
+                    renderPage(currentPageNum);
+                }
             }
         });
 
-        // Audio Play/Pause Button
+        pdfContainer.addEventListener('mousemove', showFullscreenControls);
+        fullscreenControlsOverlay.addEventListener('mousemove', showFullscreenControls);
+        pdfContainer.addEventListener('click', showFullscreenControls); 
+
+        fsPrevPageButton.addEventListener('click', () => {
+            goToPage(currentPageNum - 1);
+        });
+        fsNextPageButton.addEventListener('click', () => {
+            goToPage(currentPageNum + 1);
+        });
+        fsPlayPauseButton.addEventListener('click', async () => {
+            playPauseButton.click(); 
+        });
+
         playPauseButton.addEventListener('click', async () => {
-            console.log('Play/Pause button clicked'); // Log button click
+            console.log('Play/Pause button clicked. Current audio source:', myAudio.src, 'ReadyState:', myAudio.readyState, 'NetworkState:', myAudio.networkState);
             if (!myAudio.src) {
-                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present.", 'error');
+                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present in the root directory of your GitHub Pages site.", 'error');
                 return;
             }
 
@@ -530,53 +895,72 @@
                     await myAudio.play();
                 }
             } catch (error) {
-                let specificMessage = `Playback failed: ${error.message}.`;
+                let specificMessage = `Playback failed: ${error.message || 'Unknown error'}.`;
                 if (error.name === "NotAllowedError") {
-                    specificMessage = "Autoplay prevented. Click 'Play Audio' to start.";
+                    specificMessage = "Autoplay prevented by browser. You might need to interact with the page (like dragging the timeline) before playing audio directly.";
+                } else if (error.name === "AbortError") {
+                    specificMessage = "Playback aborted.";
                 } else if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
                     specificMessage = `Audio file not found or corrupted at '${myAudio.currentSrc}'.`;
+                } else if (myAudio.networkState === HTMLMediaElement.NETWORK_EMPTY || myAudio.readyState === 0) {
+                     specificMessage = `Audio source is empty or not loaded. Check file integrity or path: '${myAudio.currentSrc}'.`;
                 }
                 showMessage(`Audio Error: ${specificMessage}`, 'error');
                 console.error("Audio playback error:", error);
-                console.error("Audio current source:", myAudio.currentSrc);
-                isAudioPlaying = false; // Reset state
-                playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span>Play Audio</span>`;
+                console.error("Audio current source:", myAudio.currentSrc, "ReadyState:", myAudio.readyState, "NetworkState:", myAudio.networkState);
+                isAudioPlaying = false;
+                playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+                fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
             }
         });
 
-        // Audio Events
         myAudio.addEventListener('play', () => {
             isAudioPlaying = true;
-            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Pause Audio</span>`;
+            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="sr-only">Pause Audio</span>`;
+            fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="sr-only">Pause Audio</span>`;
             showMessage('Audio playing...');
         });
 
         myAudio.addEventListener('pause', () => {
             isAudioPlaying = false;
-            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span>Play Audio</span>`;
+            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+            fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
             showMessage('Audio paused.');
         });
 
         myAudio.addEventListener('ended', () => {
             isAudioPlaying = false;
-            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span>Play Audio</span>`;
+            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+            fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
             showMessage('Audio finished.');
-            audioProgressBar.value = 0; // Reset progress bar
-            currentTimeSpan.textContent = '0:00'; // Reset current time
+            audioProgressBar.value = 0; 
+            currentTimeSpan.textContent = '0:00'; 
         });
 
         myAudio.addEventListener('loadedmetadata', () => {
             console.log("Audio metadata loaded. Duration:", myAudio.duration);
             totalTimeSpan.textContent = formatTimeForDisplay(myAudio.duration);
-            audioProgressBar.max = myAudio.duration; // Set max value for progress bar
-            showMessage('Audio loaded. Click "Play Audio" to start.');
-            playPauseButton.disabled = false; // Enable play button
+            audioProgressBar.max = myAudio.duration; 
+        });
+        
+        myAudio.addEventListener('loadeddata', () => {
+            console.log("Audio data loaded. Ready state:", myAudio.readyState);
+            showMessage('Audio data loaded. Click "Play Audio" to start.');
+            playPauseButton.disabled = false; 
+            fsPlayPauseButton.disabled = false; 
+        });
+
+        myAudio.addEventListener('canplaythrough', () => {
+            console.log("Audio can play through without interruption. Ready state:", myAudio.readyState);
+            showMessage('Audio ready. Click "Play Audio" to start.');
+            playPauseButton.disabled = false;
+            fsPlayPauseButton.disabled = false;
         });
 
         myAudio.addEventListener('timeupdate', () => {
             audioProgressBar.value = myAudio.currentTime;
             currentTimeSpan.textContent = formatTimeForDisplay(myAudio.currentTime);
-            syncPdfToAudio(); // Call synchronization function
+            syncPdfToAudio(); 
         });
 
         myAudio.addEventListener('error', (e) => {
@@ -595,10 +979,10 @@
                         errorMessage = 'A network error prevented audio download. Check internet connection or GitHub Pages deployment.';
                         break;
                     case MediaError.MEDIA_ERR_DECODE:
-                        errorMessage = 'The audio could not be decoded. Ensure it\'s a valid MP3 file on GitHub Pages.';
+                        errorMessage = `The audio could not be decoded (Error Code: ${error.code}). This often means the file is corrupted or in an unsupported format. Please try re-encoding 'audio.mp3'.`;
                         break;
                     case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = `The audio format is not supported or the file could not be accessed from "${myAudio.currentSrc}". Please ensure 'audio.mp3' is a valid MP3 and correctly located in your GitHub Pages root.`;
+                        errorMessage = `The audio format is not supported or the file could not be accessed from "${myAudio.currentSrc}" (Error Code: ${error.code}). Please ensure 'audio.mp3' is a valid MP3 and correctly located in your GitHub Pages root.`;
                         break;
                     default:
                         errorMessage = `An unspecified audio error occurred (Code: ${error.code}).`;
@@ -610,32 +994,50 @@
                 errorMessage = 'An unknown audio error occurred. This often indicates the audio file was not found or accessible on GitHub Pages.';
             }
 
-            showMessage(`Audio Load Error: ${errorMessage}`, 'error');
+            showMessage(`Audio Load Error: ${errorMessage}. Please verify 'audio.mp3' is correctly named and located.`, 'error');
             isAudioPlaying = false;
-            playPauseButton.disabled = true;
-            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span>Play Audio</span>`;
+            playPauseButton.disabled = true; 
+            fsPlayPauseButton.disabled = true; 
+            playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+            fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
         });
 
         // Progress bar interaction (seeking)
         audioProgressBar.addEventListener('input', () => {
             myAudio.currentTime = audioProgressBar.value;
+            manualOverrideActive = true;
+            clearTimeout(manualOverrideTimer);
+            manualOverrideTimer = setTimeout(() => {
+                manualOverrideActive = false;
+                console.log("[Audio Seek] Manual override ended after seek.");
+            }, MANUAL_OVERRIDE_DURATION);
+            console.log("[Audio Seek] Manual override active after seek.");
+            syncPdfToAudio(); 
         });
 
         // Handle window resize to re-render PDF page to fit new size
         window.addEventListener('resize', () => {
             if (pdfDoc) {
-                queueRenderPage(currentPageNum);
+                renderPage(currentPageNum); 
             }
         });
 
         // --- Initial Load ---
         window.addEventListener('load', () => {
-            playPauseButton.disabled = true; // Initially disable play button
+            playPauseButton.disabled = true; 
+            fsPlayPauseButton.disabled = true; 
             showMessage('Initializing presentation...');
-            // Load the PDF from a relative path (assumes GitHub Pages)
-            // IMPORTANT: Make sure this PDF filename matches your file in the repo root.
-            loadPdf('./presentation.pdf'); // Current PDF filename based on your GitHub repo.
-            // Audio will attempt to load based on its src="./audio.mp3"
+            
+            // Set the audio source dynamically using the basePath
+            myAudio.src = `${basePath}/audio.mp3`;
+            console.log(`[Audio Init] Setting audio source to: ${myAudio.src}`); // Debugging audio path
+
+            // Load the PDF from a relative path
+            const pdfUrl = `${basePath}/presentation.pdf`; // Ensure this matches your file name exactly
+            loadPdf(`${pdfUrl}?t=${Date.now()}`); 
+            
+            // Explicitly load audio data to ensure readiness
+            myAudio.load();
         });
     </script>
 </body>
