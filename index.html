@@ -9,58 +9,7 @@
     <!-- PDF.js CDN for reliable PDF rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        /* Base styles for the entire page body */
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom right, #e0f2fe, #c3dafe); /* Light blue to light indigo gradient */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1.5rem;
-        }
-
-        /* Main container for the presentation, mimicking a card */
-        .presentation-card {
-            background-color: #ffffff;
-            border-radius: 1.5rem; /* Rounded corners for the card */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* Larger shadow */
-            padding: 2rem;
-            width: 100%;
-            max-width: 72rem; /* Max-width of 6xl (1152px) for desktop */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem; /* Space between sections */
-        }
-
-        /* Header styling */
-        h1 {
-            font-size: 2.5rem; /* text-4xl */
-            font-weight: 800; /* font-extrabold */
-            color: #1f2937; /* gray-900 */
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        p {
-            font-size: 1.125rem; /* text-lg */
-            color: #4b5563; /* gray-600 */
-            text-align: center;
-            max-width: 42rem; /* max-w-2xl */
-        }
-
-        /* Section headings */
-        h2 {
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 600; /* font-semibold */
-            color: #374151; /* gray-700 */
-            margin-bottom: 0.75rem;
-            text-align: center; /* Center presentation document heading */
-        }
-
-        /* Custom buttons with gradients and shadows */
+        /* Custom styles for buttons with gradients and shadows */
         .primary-button {
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -109,52 +58,37 @@
 
         /* Styling for info/error messages */
         .message-box {
-            background-color: #f3f4f6; /* gray-100 */
-            border: 1px solid #d1d5db; /* gray-300 */
-            border-radius: 0.5rem; /* rounded-lg */
-            color: #374151; /* gray-700 */
-            font-size: 1rem; /* text-base */
-            font-weight: 400; /* font-normal */
-            padding: 0.5rem 1rem; /* px-4 py-2 */
+            @apply text-base text-gray-700 font-normal px-4 py-2 rounded-lg bg-gray-100 border border-gray-300;
             min-height: 2.5rem; /* Ensure consistent height */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            width: 100%; /* Full width */
-            margin-top: 1rem; /* mt-4 */
         }
         .error-message {
-            background-color: #fee2e2; /* red-100 */
-            border: 1px solid #fca5a5; /* red-400 */
-            color: #b91c1c; /* red-700 */
-            font-weight: 700; /* font-bold */
+            @apply text-base text-red-700 font-bold px-4 py-2 rounded-lg bg-red-100 border border-red-400;
         }
 
         /* PDF viewer container and canvas styling */
         .pdf-container {
-            position: relative; /* Crucial for absolute positioning of controls */
+            position: relative;
             width: 100%;
             min-height: 400px;
-            height: 70vh; /* Responsive height for PDF viewer */
+            height: 70vh; /* Responsive height */
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
             background-color: #ffffff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden; /* Hide scrollbars of container */
-            display: flex; /* Flex container to center canvas vertically and horizontally */
+            overflow: hidden; /* Hide scrollbars of container, canvas handles own scrolling */
+            display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Allows canvas to stack above controls if controls were inside */
+            flex-direction: column; /* Allow content to stack if needed */
         }
         .pdf-canvas {
             display: block;
-            max-width: 100%;
-            max-height: 100%;
-            height: auto; /* Ensures aspect ratio is maintained */
-            width: auto;  /* Ensures aspect ratio is maintained */
-            object-fit: contain; /* Scales content to fit, preserving aspect ratio */
-            margin: auto; /* Centers the canvas within its flex container */
+            max-width: 100%; /* Ensure canvas scales down if PDF is wider */
+            height: 100%; /* Fill container height, overflow will be handled by overflow:hidden on container */
         }
         .pdf-loading-overlay {
             position: absolute;
@@ -199,7 +133,6 @@
             align-items: center;
             flex-direction: column;
         }
-        /* Canvas within fullscreen should also respect its parent */
         .pdf-container:fullscreen .pdf-canvas, .pdf-container:-webkit-full-screen .pdf-canvas, .pdf-container:-moz-full-screen .pdf-canvas, .pdf-container:-ms-fullscreen .pdf-canvas {
             width: auto; /* Allow natural width */
             max-width: 100%; /* Constrain to screen width */
@@ -211,7 +144,7 @@
 
         /* Fullscreen controls overlay */
         .fullscreen-controls-overlay {
-            position: fixed; /* Use fixed to ensure it stays on top of content in fullscreen */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -237,7 +170,7 @@
             pointer-events: auto; /* Re-enable pointer events for buttons within overlay */
         }
         .fullscreen-hint {
-            position: fixed; /* Fixed position for overlay hint */
+            position: fixed;
             bottom: 1rem;
             left: 50%;
             transform: translateX(-50%);
@@ -283,113 +216,11 @@
             cursor: pointer;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
         }
-
-        /* Main control bar styling (now floating over PDF) */
-        #mainControlBar {
-            position: absolute; /* Positioned relative to .pdf-container */
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(17, 24, 39, 0.8); /* Dark background with 80% opacity */
-            backdrop-filter: blur(8px); /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(8px); /* Safari support */
-            padding: 1rem;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow subtly above it */
-            z-index: 15; /* Above canvas but below fullscreen overlay */
-            border-bottom-left-radius: 0.75rem; /* Match pdf-container border-radius */
-            border-bottom-right-radius: 0.75rem;
-            display: flex; /* Flexbox for internal layout */
-            flex-direction: column; /* Stack vertically by default for small screens */
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem; /* Space between rows/elements */
-            width: 100%; /* Span the width of pdfContainer */
-        }
-        @media (min-width: 640px) { /* Small screens and up (sm breakpoint) */
-            #mainControlBar {
-                flex-direction: row; /* Layout horizontally on larger screens */
-                padding-left: 2rem; /* More padding on sides */
-                padding-right: 2rem;
-                gap: 2rem; /* More space between main groups */
-            }
-        }
-
-        /* Specific styling for elements within the main control bar */
-        #mainControlBar .primary-button,
-        #mainControlBar .secondary-button {
-            background: rgba(59, 130, 246, 0.9); /* Slightly more opaque blue */
-            box-shadow: none; /* Remove individual button shadows as bar has one */
-            transition: background 0.2s ease-in-out;
-        }
-        #mainControlBar .primary-button:hover,
-        #mainControlBar .secondary-button:hover {
-            background: rgba(37, 99, 235, 0.9); /* Darker blue on hover */
-            transform: none; /* No vertical lift on hover */
-        }
-        #mainControlBar .primary-button:active,
-        #mainControlBar .secondary-button:active {
-            background: rgba(30, 64, 175, 0.9); /* Even darker blue on active */
-        }
-        #mainControlBar .primary-button:disabled,
-        #mainControlBar .secondary-button:disabled {
-            background: rgba(156, 163, 175, 0.5); /* Gray and transparent for disabled */
-        }
-
-        #mainControlBar #currentTime,
-        #mainControlBar #totalTime {
-            color: #e5e7eb; /* Lighter gray for time displays */
-        }
-        #mainControlBar #pageInfo {
-            color: #f3f4f6; /* Even lighter gray for page info */
-            font-size: 1rem; /* text-base */
-        }
-        /* Responsive adjustments for page info text on small screens */
-        @media (max-width: 639px) { /* Below sm breakpoint */
-            #prevPage span, #nextPage span, #fullscreenButton span {
-                display: none; /* Hide text on small screens, only show icon */
-            }
-            #prevPage, #nextPage {
-                min-width: 3rem; /* Make buttons smaller, icon-only */
-                padding: 0.5rem;
-            }
-            #fullscreenButton {
-                 min-width: 3rem; /* Make buttons smaller, icon-only */
-                padding: 0.5rem;
-            }
-            #playPauseButton {
-                width: 4rem; /* Smaller play button on tiny screens */
-                height: 4rem;
-                padding: 0.5rem;
-            }
-        }
-
-        /* Flex item adjustments for the different parts of the control bar */
-        .control-group-audio {
-            display: flex;
-            align-items: center;
-            gap: 1rem; /* Space between play button and progress bar */
-            flex-grow: 1; /* Allow progress bar to grow */
-            width: 100%; /* Occupy full width on small screens */
-            max-width: 28rem; /* Cap width for consistency on large screens */
-        }
-        @media (min-width: 640px) {
-             .control-group-audio {
-                width: auto; /* Let content dictate width on large screens */
-             }
-        }
-        .control-group-navigation {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem; /* Tighter spacing for navigation buttons */
-            flex-shrink: 0; /* Prevent shrinking */
-            white-space: nowrap; /* Keep elements on one line */
-        }
-
     </style>
 </head>
 <body class="font-inter bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center min-h-screen p-6">
 
-    <div class="presentation-card">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-6xl flex flex-col items-center space-y-8">
         <h1 class="text-4xl font-extrabold text-gray-900 mb-4 text-center">My Amazing Presentation</h1>
         <p class="text-lg text-gray-600 text-center max-w-2xl">
             This live presentation features a PDF document and synchronized audio.
@@ -399,7 +230,7 @@
         <!-- PDF Viewer Section -->
         <div class="w-full flex flex-col items-center mt-6">
             <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation Document</h2>
-            <!-- PDF Container with Canvas for rendering and floating controls -->
+            <!-- PDF Container with Canvas for rendering -->
             <div id="pdfContainer" class="pdf-container">
                 <div id="pdfLoadingOverlay" class="pdf-loading-overlay">
                     <div class="pdf-loading-spinner"></div>
@@ -407,7 +238,7 @@
                 </div>
                 <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
 
-                <!-- Fullscreen Controls Overlay (hidden by default, appears when in actual fullscreen mode) -->
+                <!-- Fullscreen Controls Overlay (hidden by default) -->
                 <div id="fullscreenControlsOverlay" class="fullscreen-controls-overlay">
                     <div class="control-group">
                         <button id="fsPrevPage" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
@@ -434,65 +265,66 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Main Control Bar (now floating at the bottom of the PDF container) -->
-                <div id="mainControlBar">
-                    <!-- Audio Controls Group -->
-                    <div class="control-group-audio">
-                        <button id="playPauseButton" class="primary-button p-2 w-16 h-16 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
-                            </svg>
-                            <span class="sr-only">Play/Pause Audio</span>
-                        </button>
-
-                        <div class="flex-grow flex flex-col items-center space-y-1">
-                            <!-- Audio Progress Bar -->
-                            <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full accent-blue-400">
-                            <div class="flex justify-between w-full text-sm">
-                                <span id="currentTime">0:00</span>
-                                <span id="totalTime">0:00</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Page Navigation and Full Screen Buttons Group -->
-                    <div class="control-group-navigation">
-                        <button id="prevPage" class="primary-button text-sm px-4 py-2" disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                            <span class="hidden sm:inline">Prev</span>
-                        </button>
-                        <span id="pageInfo" class="text-lg font-semibold control-bar-page-info">
-                            Page 1 of 1
-                        </span>
-                        <button id="nextPage" class="primary-button text-sm px-4 py-2" disabled>
-                            <span class="hidden sm:inline">Next</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                        <button id="fullscreenButton" class="secondary-button text-sm px-4 py-2 ml-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
-                            </svg>
-                            <span class="hidden sm:inline">Full Screen</span>
-                        </button>
-                    </div>
-                </div>
             </div>
-            <!-- Fullscreen hint positioned relative to body, not container -->
             <div id="fullscreenHint" class="fullscreen-hint">Press Esc to exit Full Screen</div>
         </div>
 
-        <!-- Display area for messages (outside the PDF section to prevent layout shifts) -->
-        <div id="messageBox" class="w-full message-box mt-4">
-            Initializing presentation...
+        <!-- Combined Controls Section -->
+        <div class="w-full max-w-2xl flex flex-col items-center space-y-4 pt-6">
+            <h2 class="text-xl font-semibold text-gray-700">Presentation Controls</h2>
+            
+            <div class="w-full flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <!-- Play/Pause Button -->
+                <button id="playPauseButton" class="primary-button p-2 w-20 h-20 rounded-full flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
+                    </svg>
+                    <span class="sr-only">Play/Pause Audio</span>
+                </button>
+
+                <div class="flex-grow flex flex-col items-center space-y-1 w-full sm:w-auto">
+                    <!-- Audio Progress Bar -->
+                    <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full">
+                    <div class="flex justify-between w-full text-sm text-gray-600">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Page Navigation and Full Screen Buttons (grouped horizontally) -->
+                <div class="flex items-center space-x-2 flex-wrap gap-2 justify-center sm:justify-end">
+                    <button id="prevPage" class="primary-button text-sm" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Prev
+                    </button>
+                    <span id="pageInfo" class="text-lg font-semibold text-gray-700 px-2 flex items-center">
+                        Page 1 of 1
+                    </span>
+                    <button id="nextPage" class="primary-button text-sm" disabled>
+                        Next
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <button id="fullscreenButton" class="secondary-button text-sm ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                        </svg>
+                        <span>Full Screen</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Display area for messages -->
+            <div id="messageBox" class="w-full message-box">
+                Initializing presentation...
+            </div>
         </div>
     </div>
 
-    <script defer>
+    <script>
         // Set workerSrc for PDF.js - IMPORTANT!
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
@@ -510,9 +342,8 @@
         const currentTimeSpan = document.getElementById('currentTime');
         const totalTimeSpan = document.getElementById('totalTime');
         const messageBox = document.getElementById('messageBox');
-        const mainControlBar = document.getElementById('mainControlBar'); // Reference to the main control bar
 
-        // Fullscreen specific controls (these are the ones that appear in fullscreen mode)
+        // Fullscreen specific controls
         const fullscreenControlsOverlay = document.getElementById('fullscreenControlsOverlay');
         const fsPrevPageButton = document.getElementById('fsPrevPage');
         const fsNextPageButton = document.getElementById('fsNextPage');
@@ -571,13 +402,10 @@
         function showMessage(message, type = 'info') {
             messageBox.textContent = message;
             messageBox.classList.remove('info-message', 'error-message');
-            // Add or remove specific classes based on message type
             if (type === 'error') {
                 messageBox.classList.add('error-message');
-                messageBox.classList.remove('info-message');
             } else {
                 messageBox.classList.add('info-message');
-                messageBox.classList.remove('error-message');
             }
         }
 
@@ -842,10 +670,6 @@
                 fullscreenControlsOverlay.classList.add('visible'); // Show controls initially
                 fullscreenHint.classList.add('visible');
                 showFullscreenControls(); // Start auto-hide timer
-                // Hide the main control bar when entering fullscreen
-                if (mainControlBar) { // Ensure mainControlBar exists before trying to access its style
-                    mainControlBar.style.display = 'none';
-                }
                 if (pdfDoc) { // Re-render PDF in fullscreen to adapt to new dimensions
                     renderPage(currentPageNum);
                 }
@@ -860,10 +684,6 @@
                 fullscreenControlsOverlay.classList.remove('visible'); // Hide controls
                 fullscreenHint.classList.remove('visible');
                 clearTimeout(fullscreenControlsTimer); // Clear any pending hide timer
-                // Show the main control bar when exiting fullscreen
-                if (mainControlBar) { // Ensure mainControlBar exists before trying to access its style
-                    mainControlBar.style.display = 'flex'; // Restore display property
-                }
                 if (pdfDoc) { // Re-render PDF back to normal size
                     renderPage(currentPageNum);
                 }
@@ -893,7 +713,7 @@
         playPauseButton.addEventListener('click', async () => {
             console.log('Play/Pause button clicked. Current audio source:', myAudio.src, 'ReadyState:', myAudio.readyState, 'NetworkState:', myAudio.networkState);
             if (!myAudio.src) {
-                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present in the root directory of your GitHub Pages site.", 'error');
+                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present.", 'error');
                 return;
             }
 
@@ -1005,7 +825,7 @@
                 errorMessage = 'An unknown audio error occurred. This often indicates the audio file was not found or accessible on GitHub Pages.';
             }
 
-            showMessage(`Audio Load Error: ${errorMessage}. Please verify 'audio.mp3' is correctly named and located.`, 'error');
+            showMessage(`Audio Load Error: ${errorMessage}`, 'error');
             isAudioPlaying = false;
             playPauseButton.disabled = true; // Keep button disabled if error persists
             fsPlayPauseButton.disabled = true; // Disable fullscreen play button on error
@@ -1043,8 +863,8 @@
             // Load the PDF from a relative path
             const pdfUrl = './presentation.pdf'; // Ensure this matches your file name exactly
             loadPdf(`${pdfUrl}?t=${Date.now()}`); // Add cache-busting to ensure fresh load
-            // Explicitly load audio data to ensure readiness
-            myAudio.load();
+            // Audio will attempt to load based on its src="./audio.mp3"
+            // The play button will be enabled by 'loadeddata' or 'canplaythrough' events.
         });
     </script>
 </body>
