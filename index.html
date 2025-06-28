@@ -492,7 +492,7 @@
         </div>
     </div>
 
-    <script>
+    <script defer>
         // Set workerSrc for PDF.js - IMPORTANT!
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
@@ -843,7 +843,9 @@
                 fullscreenHint.classList.add('visible');
                 showFullscreenControls(); // Start auto-hide timer
                 // Hide the main control bar when entering fullscreen
-                mainControlBar.style.display = 'none';
+                if (mainControlBar) { // Ensure mainControlBar exists before trying to access its style
+                    mainControlBar.style.display = 'none';
+                }
                 if (pdfDoc) { // Re-render PDF in fullscreen to adapt to new dimensions
                     renderPage(currentPageNum);
                 }
@@ -859,7 +861,9 @@
                 fullscreenHint.classList.remove('visible');
                 clearTimeout(fullscreenControlsTimer); // Clear any pending hide timer
                 // Show the main control bar when exiting fullscreen
-                mainControlBar.style.display = 'flex'; // Restore display property
+                if (mainControlBar) { // Ensure mainControlBar exists before trying to access its style
+                    mainControlBar.style.display = 'flex'; // Restore display property
+                }
                 if (pdfDoc) { // Re-render PDF back to normal size
                     renderPage(currentPageNum);
                 }
@@ -889,7 +893,7 @@
         playPauseButton.addEventListener('click', async () => {
             console.log('Play/Pause button clicked. Current audio source:', myAudio.src, 'ReadyState:', myAudio.readyState, 'NetworkState:', myAudio.networkState);
             if (!myAudio.src) {
-                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present.", 'error');
+                showMessage("Audio not loaded. Please ensure 'audio.mp3' is present in the root directory of your GitHub Pages site.", 'error');
                 return;
             }
 
@@ -1001,7 +1005,7 @@
                 errorMessage = 'An unknown audio error occurred. This often indicates the audio file was not found or accessible on GitHub Pages.';
             }
 
-            showMessage(`Audio Load Error: ${errorMessage}`, 'error');
+            showMessage(`Audio Load Error: ${errorMessage}. Please verify 'audio.mp3' is correctly named and located.`, 'error');
             isAudioPlaying = false;
             playPauseButton.disabled = true; // Keep button disabled if error persists
             fsPlayPauseButton.disabled = true; // Disable fullscreen play button on error
