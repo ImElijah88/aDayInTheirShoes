@@ -12,7 +12,8 @@
         /* Base styles for the entire page body */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom right, #e0f2fe, #c3dafe); /* Light blue to light indigo gradient */
+            /* Changed body background to a softer, warmer gradient */
+            background: linear-gradient(to bottom right, #fdfcf9, #f0f5f8); /* Very light cream to light grey-blue */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,6 +25,7 @@
             -moz-user-select: none;     /* Firefox */
             -ms-user-select: none;      /* IE 10+ */
             user-select: none;          /* Standard */
+            overflow-x: hidden; /* Prevent horizontal scroll on small screens */
         }
 
         /* Main container for the presentation, mimicking a card */
@@ -44,14 +46,14 @@
         h1 {
             font-size: 2.5rem; /* text-4xl */
             font-weight: 800; /* font-extrabold */
-            color: #1f2937; /* gray-900 */
+            color: #1f2937; /* gray-900 - kept for strong contrast */
             text-align: center;
             margin-bottom: 1rem;
         }
 
         p {
             font-size: 1.125rem; /* text-lg */
-            color: #4b5563; /* gray-600 */
+            color: #4b5563; /* gray-600 - kept for readability */
             text-align: center;
             max-width: 42rem; /* max-w-2xl */
         }
@@ -69,7 +71,8 @@
         .primary-button {
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-            background: linear-gradient(145deg, #60a5fa, #3b82f6); /* Blue gradient */
+            /* Kept blue gradient for primary action, slightly adjusted colors if needed */
+            background: linear-gradient(145deg, #60a5fa, #3b82f6); /* Blue gradient (Tailwind blue-400 to blue-500) */
             border: none;
             color: white;
             font-weight: 600;
@@ -85,7 +88,7 @@
         .primary-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(145deg, #3b82f6, #2563eb); /* Darker blue on hover */
+            background: linear-gradient(145deg, #3b82f6, #2563eb); /* Darker blue on hover (Tailwind blue-500 to blue-600) */
         }
         .primary-button:active {
             transform: translateY(0);
@@ -114,12 +117,13 @@
             justify-content: center;
             gap: 0.5rem;
             white-space: nowrap;
-            background: linear-gradient(145deg, #a78bfa, #8b5cf6); /* Purple gradient */
+            /* Kept purple gradient, slightly adjusted if needed for consistency */
+            background: linear-gradient(145deg, #a78bfa, #8b5cf6); /* Purple gradient (Tailwind purple-400 to purple-500) */
         }
         .secondary-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(145deg, #8b5cf6, #7c3aed); /* Darker purple on hover */
+            background: linear-gradient(145deg, #8b5cf6, #7c3aed); /* Darker purple on hover (Tailwind purple-500 to purple-600) */
         }
         .secondary-button:active {
             transform: translateY(0);
@@ -205,7 +209,8 @@
         }
         .pdf-loading-spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6; /* Blue spinner */
+            /* Adjusted spinner color for consistency with primary button */
+            border-top: 4px solid #60a5fa; /* Tailwind blue-400 */
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -277,7 +282,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(17, 24, 39, 0.8); /* Dark background with 80% opacity */
+            /* Adjusted control bar background to a slightly warmer dark grey-blue */
+            background: rgba(30, 41, 59, 0.8); /* Tailwind slate-800 with 80% opacity */
             backdrop-filter: blur(8px); /* Frosted glass effect */
             -webkit-backdrop-filter: blur(8px); /* Safari support */
             padding: 1rem;
@@ -462,7 +468,8 @@
             display: none;
         }
         .legal-terms {
-            background-color: #f8fafc; /* blue-50 */
+            /* Changed legal terms background to neutral-50 for better blending */
+            background-color: #fafafa; /* neutral-50 */
             border: 1px solid #e2e8f0; /* slate-200 */
             border-radius: 0.75rem;
             padding: 1.5rem;
@@ -509,6 +516,62 @@
             outline: none;
             border-color: #3b82f6; /* blue-500 */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* blue-500 with opacity */
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of everything */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(-20px); /* Initial slight lift */
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: translateY(0); /* Animate to center */
+        }
+        .modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .modal-content p {
+            font-size: 1rem;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content .input-field {
+            margin-bottom: 1rem;
+        }
+        .modal-content .modal-message {
+            color: #dc2626; /* Red for modal errors */
+            font-size: 0.875rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            min-height: 1rem; /* Reserve space */
         }
     </style>
 </head>
@@ -662,6 +725,17 @@
         </div>
     </div>
 
+    <!-- Name Input Modal -->
+    <div id="nameModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Confirm Your Identity</h3>
+            <p>Please enter your name to verify you are not a robot.</p>
+            <input type="text" id="viewerName" name="name" class="input-field" placeholder="Your Full Name" required>
+            <div id="modalMessage" class="modal-message"></div>
+            <button id="confirmNameButton" class="primary-button mt-4">Confirm</button>
+        </div>
+    </div>
+
     <script defer>
         // Set workerSrc for PDF.js - IMPORTANT!
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -672,7 +746,6 @@
         const basePath = '/aDayInTheirShoes'; 
 
         // --- FORMSPREE CONFIGURATION ---
-        // IMPORTANT: Replace this with your actual Formspree endpoint URL.
         const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xovwyplw'; 
 
 
@@ -708,6 +781,12 @@
         const fsPlayPauseButton = document.getElementById('fsPlayPauseButton');
         const fullscreenHint = document.getElementById('fullscreenHint');
 
+        // Modal elements
+        const nameModal = document.getElementById('nameModal');
+        const viewerNameInput = document.getElementById('viewerName');
+        const confirmNameButton = document.getElementById('confirmNameButton');
+        const modalMessage = document.getElementById('modalMessage');
+
 
         // --- Global State Variables ---
         let pdfDoc = null; 
@@ -721,6 +800,8 @@
         let manualOverrideActive = false;
         let manualOverrideTimer = null;
         const MANUAL_OVERRIDE_DURATION = 2000; 
+
+        let viewerConfirmedName = ''; // Stores the name entered in the modal
 
 
         // --- Synchronization Points (Customize these for your presentation!) ---
@@ -751,25 +832,30 @@
          * Displays a message to the user in the message box.
          * @param {string} message The text message to display.
          * @param {'info'|'error'|'success'} type The type of message, for styling.
+         * @param {HTMLElement} targetMessageBox The message box element to target (default: main messageBox)
          */
-        function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.classList.remove('info-message', 'error-message', 'success-message');
+        function showMessage(message, type = 'info', targetMessageBox = messageBox) {
+            targetMessageBox.textContent = message;
+            targetMessageBox.classList.remove('info-message', 'error-message', 'success-message');
+            // Reset custom styles if they were applied
+            targetMessageBox.style.backgroundColor = ''; 
+            targetMessageBox.style.borderColor = '';
+            targetMessageBox.style.color = '';
+
             // Add specific classes based on message type
             if (type === 'error') {
-                messageBox.classList.add('error-message');
+                targetMessageBox.classList.add('error-message');
             } else if (type === 'success') {
-                messageBox.classList.add('info-message'); // Using info-message styling for success for now
-                messageBox.style.backgroundColor = '#d1fae5'; /* green-100 */
-                messageBox.style.borderColor = '#34d399'; /* green-400 */
-                messageBox.style.color = '#065f46'; /* green-800 */
+                // Apply specific success styling
+                targetMessageBox.classList.add('info-message'); 
+                targetMessageBox.style.backgroundColor = '#d1fae5'; /* green-100 */
+                targetMessageBox.style.borderColor = '#34d399'; /* green-400 */
+                targetMessageBox.style.color = '#065f46'; /* green-800 */
             } else {
-                messageBox.classList.add('info-message');
-                messageBox.style.backgroundColor = ''; // Reset if previously success/error
-                messageBox.style.borderColor = '';
-                messageBox.style.color = '';
+                targetMessageBox.classList.add('info-message');
             }
         }
+
 
         /**
          * Formats a time in seconds into MM:SS format.
@@ -1179,9 +1265,53 @@
             const isEmailValid = viewerEmail.checkValidity(); 
             const isNdaChecked = ndaCheckbox.checked;
             const isCaptchaChecked = captchaCheckbox.checked;
-            // The button is enabled only if all three conditions are met
-            proceedButton.disabled = !(isEmailValid && isNdaChecked && isCaptchaChecked);
+            const isNameConfirmed = (viewerConfirmedName !== ''); // Check if name has been confirmed in modal
+
+            // Proceed button is enabled only if all four conditions are met
+            proceedButton.disabled = !(isEmailValid && isNdaChecked && isCaptchaChecked && isNameConfirmed);
         }
+
+        // --- Modal Logic ---
+
+        // Show the name modal when captcha is checked AND the name hasn't been confirmed yet
+        captchaCheckbox.addEventListener('change', () => {
+            if (captchaCheckbox.checked && viewerConfirmedName === '') {
+                nameModal.classList.add('visible');
+                viewerNameInput.value = ''; // Clear previous input
+                viewerNameInput.focus();
+                showMessage('', 'info', modalMessage); // Clear modal message
+                // Temporarily disable main proceed button until name is confirmed
+                proceedButton.disabled = true; 
+            } else if (!captchaCheckbox.checked) {
+                // If captcha is unchecked, reset confirmed name and re-evaluate button state
+                viewerConfirmedName = '';
+                checkProceedButtonState();
+            }
+        });
+
+        // Handle name confirmation button click
+        confirmNameButton.addEventListener('click', () => {
+            const name = viewerNameInput.value.trim();
+            if (name === '') {
+                showMessage('Please enter your name.', 'error', modalMessage);
+            } else if (name.length < 2) {
+                showMessage('Name is too short. Please enter a valid name.', 'error', modalMessage);
+            }
+             else {
+                viewerConfirmedName = name; // Store the confirmed name
+                nameModal.classList.remove('visible'); // Hide the modal
+                showMessage('', 'info', modalMessage); // Clear modal message on success
+                checkProceedButtonState(); // Re-evaluate proceed button state
+            }
+        });
+
+        // Allow pressing Enter in the name input to confirm
+        viewerNameInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission if modal is within a form
+                confirmNameButton.click(); // Programmatically click the confirm button
+            }
+        });
 
 
         // --- Initial Load and Event Setup ---
@@ -1202,7 +1332,8 @@
             // Event listeners for all inputs/checkboxes that affect the proceed button state
             viewerEmail.addEventListener('input', checkProceedButtonState);
             ndaCheckbox.addEventListener('change', checkProceedButtonState);
-            captchaCheckbox.addEventListener('change', checkProceedButtonState);
+            // Captcha checkbox now triggers modal, checkProceedButtonState is called after modal closes
+            // captchaCheckbox.addEventListener('change', checkProceedButtonState); 
 
             // Initial check for button state in case fields are pre-filled by browser
             checkProceedButtonState();
@@ -1212,8 +1343,8 @@
                 event.preventDefault(); // Prevent default form submission to handle with fetch
 
                 // Double check validity on click, though button should be disabled if not valid
-                if (!viewerEmail.checkValidity() || !ndaCheckbox.checked || !captchaCheckbox.checked) {
-                    showMessage('Please ensure your email is valid, you have agreed to the terms, and confirmed you are not a robot.', 'error');
+                if (!viewerEmail.checkValidity() || !ndaCheckbox.checked || !captchaCheckbox.checked || viewerConfirmedName === '') {
+                    showMessage('Please ensure your email is valid, you have agreed to the terms, confirmed you are not a robot, and entered your name.', 'error');
                     return; // Stop the submission
                 }
 
@@ -1222,6 +1353,8 @@
                 proceedButton.textContent = 'Submitting...';
 
                 const formData = new FormData(accessForm); // Gather form data
+                // Add the confirmed name to the form data
+                formData.append('viewer_name', viewerConfirmedName);
                 // Add current page URL to form data for context
                 formData.append('page_url', window.location.href);
                 // Optionally add a timestamp of submission
