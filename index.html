@@ -97,7 +97,6 @@
 
         /* Secondary button for fullscreen with distinct color */
         .secondary-button {
-            /* @apply primary-button; /* Inherit base button styles */ /* Replaced with explicit properties to prevent recursion from `@apply` */
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
             border: none;
@@ -373,20 +372,21 @@
         /* Fullscreen Controls Overlay (appears when in actual fullscreen mode) */
         .fullscreen-controls-overlay {
             position: fixed; /* Use fixed to ensure it stays on top of content in fullscreen */
-            top: 0;
+            bottom: 0; /* Position at the bottom */
             left: 0;
             width: 100%;
-            height: 100%;
+            /* Removed top: 0 and height: 100% to let content define height */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center; /* Center content horizontally */
+            align-items: flex-end; /* Align content to the bottom */
             pointer-events: none; /* Allows clicks to pass through if no button is hovered */
             z-index: 20; /* Above PDF overlay */
-            padding: 1rem;
+            padding: 1.5rem 1rem; /* Increased bottom padding */
             box-sizing: border-box;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0)); /* Fading gradient top */
+            background: linear-gradient(to top, rgba(0,0,0,0.4), rgba(0,0,0,0)); /* Fading gradient bottom to top */
             opacity: 0; /* Hidden by default */
             transition: opacity 0.3s ease-in-out;
+            gap: 1rem; /* Spacing between control groups */
         }
         .fullscreen-controls-overlay.visible {
             opacity: 1;
@@ -397,6 +397,28 @@
             gap: 1rem; /* Spacing between buttons */
             pointer-events: auto; /* Re-enable pointer events for buttons within overlay */
         }
+
+        /* Styling for fullscreen overlay buttons to make them transparent */
+        .fullscreen-controls-overlay .primary-button,
+        .fullscreen-controls-overlay .secondary-button {
+            background: rgba(59, 130, 246, 0.4); /* More transparent blue for fullscreen controls */
+            box-shadow: none; /* No shadow for a flatter look */
+            border: 1px solid rgba(255,255,255,0.3); /* Subtle white border */
+            color: white; /* Ensure icons/text are white */
+        }
+        .fullscreen-controls-overlay .primary-button:hover,
+        .fullscreen-controls-overlay .secondary-button:hover {
+            background: rgba(37, 99, 235, 0.6); /* Slightly more opaque blue on hover */
+            transform: none; /* No vertical lift */
+            box-shadow: none; /* Still no shadow */
+        }
+        .fullscreen-controls-overlay .primary-button:active,
+        .fullscreen-controls-overlay .secondary-button:active {
+            background: rgba(30, 64, 175, 0.7); /* Even more opaque blue on active */
+            box-shadow: none;
+        }
+
+
         .fullscreen-hint {
             position: fixed; /* Fixed position for overlay hint */
             bottom: 1rem;
@@ -790,6 +812,7 @@
             try {
                 // Add a cache-busting parameter to ensure fresh load
                 const urlWithCacheBust = `${pdfUrl}?v=${Date.now()}`;
+                console.log(`[PDF Load] Attempting to load PDF from: ${urlWithCacheBust}`); // Debugging path
                 const loadingTask = pdfjsLib.getDocument(urlWithCacheBust);
                 pdfDoc = await loadingTask.promise;
                 console.log(`[PDF] Document loaded successfully. Total pages: ${pdfDoc.numPages}`);
