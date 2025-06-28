@@ -632,7 +632,8 @@
             }
             if (targetPage !== currentPageNum) { // Only navigate if different page
                 console.log(`[Sync] Audio at ${formatTimeForDisplay(currentTime)}s, syncing to page ${targetPage}.`);
-                goToPage(targetPage);
+                // Use renderPage directly here to ensure consistency and queuing
+                renderPage(targetPage);
             }
         }
 
@@ -717,12 +718,6 @@
             console.log('Play/Pause button clicked. Current audio source:', myAudio.src, 'ReadyState:', myAudio.readyState, 'NetworkState:', myAudio.networkState);
             if (!myAudio.src) {
                 showMessage("Audio not loaded. Please ensure 'audio.mp3' is present.", 'error');
-                return;
-            }
-
-            // Check if audio is ready to play (HAVE_ENOUGH_DATA or HAVE_FUTURE_DATA)
-            if (myAudio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) { // Minimum data for current playback position
-                showMessage("Audio is still loading or not ready. Please wait.", 'info');
                 return;
             }
 
