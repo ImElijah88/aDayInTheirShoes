@@ -72,8 +72,8 @@
         .primary-button {
             transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-            /* New: Earthy brown/orange gradient for primary action */
-            background: linear-gradient(145deg, #a78b5a, #8c6e3b); /* Muted orange-brown to darker brown */
+            /* New: Lilac/Purple gradient for primary action */
+            background: linear-gradient(145deg, #a78bfa, #8b5cf6); /* Tailwind purple-400 to purple-500 */
             border: none;
             color: white;
             font-weight: 600;
@@ -89,12 +89,12 @@
         .primary-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(145deg, #8c6e3b, #70542a); /* Darker brown on hover */
+            background: linear-gradient(145deg, #8b5cf6, #7c3aed); /* Darker purple on hover (purple-500 to purple-600) */
         }
         .primary-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-            background: linear-gradient(145deg, #70542a, #8c6e3b); /* Reverse gradient on active */
+            background: linear-gradient(145deg, #7c3aed, #8b5cf6); /* Reverse gradient on active */
         }
         .primary-button:disabled {
             opacity: 0.6;
@@ -118,18 +118,18 @@
             justify-content: center;
             gap: 0.5rem;
             white-space: nowrap;
-            /* New: Muted green/teal gradient for secondary action */
-            background: linear-gradient(145deg, #6c9a8d, #4e776d); /* Muted green/teal */
+            /* New: Darker lilac/purple gradient for secondary action */
+            background: linear-gradient(145deg, #8b5cf6, #7c3aed); /* Tailwind purple-500 to purple-600 */
         }
         .secondary-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(145deg, #4e776d, #3b5f54); /* Darker green/teal on hover */
+            background: linear-gradient(145deg, #7c3aed, #6d28d9); /* Even darker purple on hover (purple-600 to purple-700) */
         }
         .secondary-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-            background: linear-gradient(145deg, #3b5f54, #4e776d); /* Reverse gradient on active */
+            background: linear-gradient(145deg, #6d28d9, #7c3aed); /* Reverse gradient on active */
         }
         .secondary-button:disabled {
             opacity: 0.6;
@@ -212,8 +212,8 @@
         }
         .pdf-loading-spinner {
             border: 4px solid #f3f3f3;
-            /* Adjusted spinner color for consistency with primary button */
-            border-top: 4px solid #a78b5a; /* Primary button start color */
+            /* Adjusted spinner color to match new primary button start color */
+            border-top: 4px solid #a78bfa; /* Primary button start color */
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -266,19 +266,19 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            /* Adjusted progress bar thumb to match primary button */
-            background: #8c6e3b; /* Primary button end color */
+            /* Adjusted progress bar thumb to match new primary button end color */
+            background: #8b5cf6; /* Primary button end color */
             cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(140, 110, 59, 0.4); /* Matching shadow */
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.4); /* Matching shadow */
         }
         #audioProgressBar::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            /* Adjusted progress bar thumb to match primary button */
-            background: #8c6e3b; /* Primary button end color */
+            /* Adjusted progress bar thumb to match new primary button end color */
+            background: #8b5cf6; /* Primary button end color */
             cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(140, 110, 59, 0.4);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.4);
         }
 
         /* Main control bar styling (now floating over PDF) */
@@ -287,10 +287,10 @@
             bottom: 0;
             left: 0;
             right: 0;
-            /* New: Darker earthy brown for control bar background */
-            background: rgba(59, 45, 28, 0.85); /* Darker brown with higher opacity */
-            backdrop-filter: blur(8px); /* Frosted glass effect */
-            -webkit-backdrop-filter: blur(8px); /* Safari support */
+            /* New: Translucent lilac/purple for control bar background */
+            background: rgba(139, 92, 246, 0.7); /* Tailwind purple-500 with 70% opacity */
+            backdrop-filter: blur(10px); /* Slightly stronger frosted glass effect */
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
             padding: 1rem;
             box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow subtly above it */
             z-index: 15; /* Above canvas but below fullscreen overlay */
@@ -322,19 +322,19 @@
         /* Specific styling for elements within the main control bar */
         #mainControlBar .primary-button,
         #mainControlBar .secondary-button {
-            /* Adjusted control bar buttons to be less saturated for blend */
-            background: rgba(140, 110, 59, 0.9); /* Muted brown from primary button */
+            /* Adjusted control bar buttons to blend with translucent lilac bar */
+            background: rgba(167, 139, 250, 0.6); /* Lighter purple-400 with 60% opacity */
             box-shadow: none; /* Remove individual button shadows as bar has one */
             transition: background 0.2s ease-in-out;
         }
         #mainControlBar .primary-button:hover,
         #mainControlBar .secondary-button:hover {
-            background: rgba(112, 84, 42, 0.9); /* Darker muted brown on hover */
+            background: rgba(139, 92, 246, 0.8); /* Main purple-500 with 80% opacity on hover */
             transform: none; /* No vertical lift on hover */
         }
         #mainControlBar .primary-button:active,
         #mainControlBar .secondary-button:active {
-            background: linear-gradient(145deg, rgba(112, 84, 42, 0.9), rgba(140, 110, 59, 0.9)); /* Reverse gradient on active */
+            background: linear-gradient(145deg, rgba(109, 40, 217, 0.9), rgba(139, 92, 246, 0.9)); /* Deeper purple on active */
         }
         #mainControlBar .primary-button:disabled,
         #mainControlBar .secondary-button:disabled {
@@ -343,7 +343,7 @@
 
         #mainControlBar #currentTime,
         #mainControlBar #totalTime {
-            color: #fbf9f5; /* Very light cream for time displays */
+            color: #fbf9f5; /* Very light cream for time displays (matches body background start) */
         }
         #mainControlBar #pageInfo {
             color: #f8f6f2; /* Even lighter cream for page info */
@@ -424,20 +424,20 @@
         .fullscreen-controls-overlay .primary-button,
         .fullscreen-controls-overlay .secondary-button {
             /* Adjusted fullscreen overlay buttons to match new primary color palette */
-            background: rgba(140, 110, 59, 0.4); /* Muted brown from primary button */
+            background: rgba(139, 92, 246, 0.4); /* Main purple-500 with 40% opacity */
             box-shadow: none; /* No shadow for a flatter look */
             border: 1px solid rgba(255,255,255,0.3); /* Subtle white border */
             color: white; /* Ensure icons/text are white */
         }
         .fullscreen-controls-overlay .primary-button:hover,
         .fullscreen-controls-overlay .secondary-button:hover {
-            background: rgba(112, 84, 42, 0.6); /* Darker muted brown on hover */
+            background: rgba(139, 92, 246, 0.6); /* Main purple-500 with 60% opacity on hover */
             transform: none; /* No vertical lift */
             box-shadow: none;
         }
         .fullscreen-controls-overlay .primary-button:active,
         .fullscreen-controls-overlay .secondary-button:active {
-            background: rgba(90, 67, 34, 0.7); /* Even more opaque brown on active */
+            background: rgba(109, 40, 217, 0.7); /* Even more opaque purple on active */
             box-shadow: none;
         }
 
@@ -522,8 +522,8 @@
         .input-field:focus {
             outline: none;
             /* Input focus border matches new primary button accent */
-            border-color: #a78b5a; /* primary button start color */
-            box-shadow: 0 0 0 3px rgba(167, 139, 90, 0.3); /* matching shadow */
+            border-color: #a78bfa; /* primary button start color */
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3); /* matching shadow */
         }
 
         /* Modal specific styles */
