@@ -443,7 +443,7 @@
 
     <div class="presentation-card">
         <!-- New: Featured Image for Introduction -->
-        <img src="<%= basePath %>/image.jpg" alt="A child standing in an oversized business shoe, looking upwards, representing 'A Day In Their Shoes' and new perspectives." class="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl rounded-xl shadow-lg mb-6 object-cover object-center" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';">
+        <img id="introImage" alt="A child standing in an oversized business shoe, looking upwards, representing 'A Day In Their Shoes' and new perspectives." class="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl rounded-xl shadow-lg mb-6 object-cover object-center" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';">
         
         <h1 class="text-4xl font-extrabold text-gray-900 mb-4 text-center">A Day In Their Shoes: Step Into The Unknown</h1>
         <p class="text-lg text-gray-600 text-center max-w-2xl">
@@ -574,6 +574,7 @@
         const totalTimeSpan = document.getElementById('totalTime');
         const messageBox = document.getElementById('messageBox');
         const mainControlBar = document.getElementById('mainControlBar'); // Reference to the main control bar
+        const introImage = document.getElementById('introImage'); // Get reference to the new image element
 
         // Fullscreen specific controls (these are the ones that appear in fullscreen mode)
         const fullscreenControlsOverlay = document.getElementById('fullscreenControlsOverlay');
@@ -1044,7 +1045,7 @@
             let errorMessage = `An audio error occurred (Code: ${error ? error.code : 'unknown'}).`;
             console.error("Audio element error event triggered:", e);
             console.error("MediaError object:", error);
-            console.error("Audio current source on error:", myAudio.currentSrc);
+            console.error("Audio current source:", myAudio.currentSrc);
 
             if (error) {
                 switch (error.code) {
@@ -1100,6 +1101,12 @@
 
         // --- Initial Load ---
         window.addEventListener('load', () => {
+            // Set the image source dynamically after basePath is defined
+            if (introImage) {
+                introImage.src = `${basePath}/image.jpg`;
+                console.log(`[Image Init] Setting image source to: ${introImage.src}`);
+            }
+
             playPauseButton.disabled = true; 
             fsPlayPauseButton.disabled = true; 
             showMessage('Initializing presentation...');
