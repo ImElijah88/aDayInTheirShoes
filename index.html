@@ -377,25 +377,23 @@
         // The current values are placeholders. Distribute them evenly or based on your narration.
         const syncPoints = [
             { time: 0, page: 1 },
-            { time: 10, page: 2 },  // Example: Page 2 at 10 seconds (adjust to your audio)
-            { time: 20, page: 3 },  // Example: Page 3 at 20 seconds
-            { time: 30, page: 4 },
-            { time: 40, page: 5 },
-            { time: 50, page: 6 },
-            { time: 60, page: 7 },
-            { time: 70, page: 8 },
-            { time: 80, page: 9 },
-            { time: 90, page: 10 },
-            { time: 100, page: 11 },
-            { time: 110, page: 12 },
-            { time: 120, page: 13 },
-            { time: 130, page: 14 },
-            { time: 140, page: 15 },
-            { time: 150, page: 16 },
-            { time: 160, page: 17 },
-            { time: 170, page: 18 } // This should be around 2 minutes 50 seconds for the last page
-                                     // If your audio is 5 mins, you might want to spread these out more,
-                                     // e.g., every ~16 seconds for 18 pages. (300 seconds / 18 pages ≈ 16.6 seconds/page)
+            { time: 16, page: 2 },  // Approx. 16.67 seconds per page for 18 pages over 5 minutes (300s)
+            { time: 32, page: 3 },
+            { time: 48, page: 4 },
+            { time: 64, page: 5 },
+            { time: 80, page: 6 },
+            { time: 96, page: 7 },
+            { time: 112, page: 8 },
+            { time: 128, page: 9 },
+            { time: 144, page: 10 },
+            { time: 160, page: 11 },
+            { time: 176, page: 12 },
+            { time: 192, page: 13 },
+            { time: 208, page: 14 },
+            { time: 224, page: 15 },
+            { time: 240, page: 16 },
+            { time: 256, page: 17 },
+            { time: 280, page: 18 } // Place page 18 close to the end, but allow buffer
         ];
 
         // --- Utility Functions ---
@@ -618,7 +616,10 @@
          * Updates the PDF page based on the current audio playback time.
          */
         function syncPdfToAudio() {
-            if (!pdfDoc || manualOverrideActive) return; // Cannot sync if PDF not loaded or manual override is active
+            if (!pdfDoc || manualOverrideActive) {
+                // console.log(`[Sync] Skipped sync: PDF not loaded (${!pdfDoc}) or manual override active (${manualOverrideActive}).`);
+                return; // Cannot sync if PDF not loaded or manual override is active
+            }
 
             const currentTime = myAudio.currentTime;
             let targetPage = currentPageNum;
@@ -630,6 +631,7 @@
                 }
             }
             if (targetPage !== currentPageNum) { // Only navigate if different page
+                console.log(`[Sync] Audio at ${formatTimeForDisplay(currentTime)}s, syncing to page ${targetPage}.`);
                 goToPage(targetPage);
             }
         }
