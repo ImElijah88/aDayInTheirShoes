@@ -71,7 +71,7 @@
 
         /* PDF viewer container and canvas styling */
         .pdf-container {
-            position: relative;
+            position: relative; /* Crucial for absolute positioning of controls */
             width: 100%;
             min-height: 400px;
             height: 70vh; /* Responsive height */
@@ -80,14 +80,13 @@
             background-color: #ffffff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden; /* Hide scrollbars of container, canvas handles own scrolling */
-            display: flex;
+            display: flex; /* Flex container to center canvas */
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Allow content to stack if needed */
+            flex-direction: column; /* Allows canvas and control bar to stack vertically */
         }
         .pdf-canvas {
             display: block;
-            /* Use max-width/height and object-fit for responsive scaling */
             max-width: 100%;
             max-height: 100%;
             height: auto; /* Ensures aspect ratio is maintained */
@@ -150,7 +149,7 @@
 
         /* Fullscreen controls overlay */
         .fullscreen-controls-overlay {
-            position: fixed;
+            position: fixed; /* Use fixed to ensure it stays on top of content in fullscreen */
             top: 0;
             left: 0;
             width: 100%;
@@ -176,7 +175,7 @@
             pointer-events: auto; /* Re-enable pointer events for buttons within overlay */
         }
         .fullscreen-hint {
-            position: fixed;
+            position: fixed; /* Fixed position for overlay hint */
             bottom: 1rem;
             left: 50%;
             transform: translateX(-50%);
@@ -232,6 +231,36 @@
             min-width: 7rem; /* Ensure enough space for "Page X of Y" */
             text-align: center;
         }
+
+        /* Main control bar styling (now floating) */
+        #mainControlBar {
+            background: rgba(17, 24, 39, 0.7); /* gray-900 with 70% opacity */
+            backdrop-filter: blur(5px); /* Optional: blur background for frosted glass effect */
+            -webkit-backdrop-filter: blur(5px); /* Safari support */
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2); /* Shadow subtly above it */
+            z-index: 15; /* Above canvas but below fullscreen overlay */
+            border-bottom-left-radius: 0.75rem; /* Match pdf-container border-radius */
+            border-bottom-right-radius: 0.75rem;
+            /* Ensure it stays at the bottom and is full width of its parent */
+            display: flex; /* Keep flex properties for internal layout */
+            width: 100%; /* Ensure it spans the width of pdfContainer */
+        }
+        /* Override primary button text color for better visibility on dark background if needed */
+        #mainControlBar .primary-button {
+            color: white;
+        }
+        #mainControlBar .secondary-button {
+            color: white;
+        }
+        #mainControlBar #currentTime,
+        #mainControlBar #totalTime {
+            color: #d1d5db; /* Lighter gray for time displays */
+        }
+        #mainControlBar #pageInfo {
+            color: #e5e7eb; /* Lighter gray for page info */
+        }
     </style>
 </head>
 <body class="font-inter bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center min-h-screen p-6">
@@ -254,7 +283,7 @@
                 </div>
                 <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
 
-                <!-- Fullscreen Controls Overlay (hidden by default) -->
+                <!-- Fullscreen Controls Overlay (hidden by default, appears in fullscreen) -->
                 <div id="fullscreenControlsOverlay" class="fullscreen-controls-overlay">
                     <div class="control-group">
                         <button id="fsPrevPage" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
@@ -281,62 +310,59 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Main Control Bar (now floating at the bottom of the PDF container) -->
+                <div id="mainControlBar" class="absolute bottom-0 left-0 right-0 p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+                    <!-- Play/Pause Button -->
+                    <button id="playPauseButton" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
+                        </svg>
+                        <span class="sr-only">Play/Pause Audio</span>
+                    </button>
+
+                    <div class="flex-grow flex flex-col items-center space-y-1 w-full sm:w-auto mx-4">
+                        <!-- Audio Progress Bar -->
+                        <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full accent-blue-400">
+                        <div class="flex justify-between w-full text-sm">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Page Navigation and Full Screen Buttons (grouped horizontally) -->
+                    <div class="flex items-center space-x-2 flex-wrap gap-2 justify-center sm:justify-end control-bar-item">
+                        <button id="prevPage" class="primary-button text-sm px-4 py-2" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </button>
+                        <span id="pageInfo" class="text-lg font-semibold control-bar-page-info">
+                            Page 1 of 1
+                        </span>
+                        <button id="nextPage" class="primary-button text-sm px-4 py-2" disabled>
+                            <span class="hidden sm:inline">Next</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <button id="fullscreenButton" class="secondary-button text-sm px-4 py-2 ml-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                            </svg>
+                            <span class="hidden sm:inline">Full Screen</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+            <!-- Fullscreen hint needs to be relative to the pdfContainer for positioning in fullscreen -->
             <div id="fullscreenHint" class="fullscreen-hint">Press Esc to exit Full Screen</div>
         </div>
 
-        <!-- Unified Control Bar Section -->
-        <div class="w-full max-w-4xl pt-6">
-            <h2 class="text-xl font-semibold text-gray-700 text-center mb-4">Presentation Controls</h2>
-            
-            <div class="w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 p-4 bg-gray-50 rounded-2xl shadow-inner">
-                <!-- Play/Pause Button -->
-                <button id="playPauseButton" class="primary-button p-2 w-16 h-16 rounded-full flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
-                    </svg>
-                    <span class="sr-only">Play/Pause Audio</span>
-                </button>
-
-                <div class="flex-grow flex flex-col items-center space-y-1 w-full sm:w-auto mx-4">
-                    <!-- Audio Progress Bar -->
-                    <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full">
-                    <div class="flex justify-between w-full text-sm text-gray-600">
-                        <span id="currentTime">0:00</span>
-                        <span id="totalTime">0:00</span>
-                    </div>
-                </div>
-
-                <!-- Page Navigation and Full Screen Buttons (grouped horizontally) -->
-                <div class="flex items-center space-x-2 flex-wrap gap-2 justify-center sm:justify-end control-bar-item">
-                    <button id="prevPage" class="primary-button text-sm px-4 py-2" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <span class="hidden sm:inline">Prev</span>
-                    </button>
-                    <span id="pageInfo" class="text-lg font-semibold text-gray-700 control-bar-page-info">
-                        Page 1 of 1
-                    </span>
-                    <button id="nextPage" class="primary-button text-sm px-4 py-2" disabled>
-                        <span class="hidden sm:inline">Next</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <button id="fullscreenButton" class="secondary-button text-sm px-4 py-2 ml-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
-                        </svg>
-                        <span class="hidden sm:inline">Full Screen</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Display area for messages -->
-            <div id="messageBox" class="w-full message-box mt-4">
-                Initializing presentation...
-            </div>
+        <!-- Display area for messages (outside the PDF section to prevent layout shifts) -->
+        <div id="messageBox" class="w-full message-box mt-4">
+            Initializing presentation...
         </div>
     </div>
 
@@ -358,6 +384,7 @@
         const currentTimeSpan = document.getElementById('currentTime');
         const totalTimeSpan = document.getElementById('totalTime');
         const messageBox = document.getElementById('messageBox');
+        const mainControlBar = document.getElementById('mainControlBar'); // Reference to the main control bar
 
         // Fullscreen specific controls (these are the ones that appear in fullscreen mode)
         const fullscreenControlsOverlay = document.getElementById('fullscreenControlsOverlay');
@@ -418,10 +445,13 @@
         function showMessage(message, type = 'info') {
             messageBox.textContent = message;
             messageBox.classList.remove('info-message', 'error-message');
+            // Add or remove specific classes based on message type
             if (type === 'error') {
                 messageBox.classList.add('error-message');
+                messageBox.classList.remove('info-message');
             } else {
                 messageBox.classList.add('info-message');
+                messageBox.classList.remove('error-message');
             }
         }
 
@@ -686,6 +716,8 @@
                 fullscreenControlsOverlay.classList.add('visible'); // Show controls initially
                 fullscreenHint.classList.add('visible');
                 showFullscreenControls(); // Start auto-hide timer
+                // Hide the main control bar when entering fullscreen
+                mainControlBar.style.display = 'none';
                 if (pdfDoc) { // Re-render PDF in fullscreen to adapt to new dimensions
                     renderPage(currentPageNum);
                 }
@@ -700,6 +732,8 @@
                 fullscreenControlsOverlay.classList.remove('visible'); // Hide controls
                 fullscreenHint.classList.remove('visible');
                 clearTimeout(fullscreenControlsTimer); // Clear any pending hide timer
+                // Show the main control bar when exiting fullscreen
+                mainControlBar.style.display = 'flex'; // Restore display property
                 if (pdfDoc) { // Re-render PDF back to normal size
                     renderPage(currentPageNum);
                 }
