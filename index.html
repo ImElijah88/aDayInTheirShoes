@@ -362,6 +362,8 @@
         let pageNumPending = null; // Stores a page number if rendering was requested while another was in progress
 
         let isAudioPlaying = false; // Tracks the current playback state of the audio
+        let fullscreenControlsTimer = null; // Timer for auto-hiding full screen controls
+
 
         // --- Synchronization Points (Customize these for your presentation!) ---
         // This array defines when each PDF page should appear based on audio time.
@@ -415,6 +417,28 @@
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = Math.floor(seconds % 60);
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        // --- Fullscreen Controls Visibility ---
+
+        /**
+         * Shows the fullscreen controls and resets the auto-hide timer.
+         */
+        function showFullscreenControls() {
+            if (document.fullscreenElement) {
+                fullscreenControlsOverlay.classList.add('visible');
+                fullscreenHint.classList.add('visible');
+                clearTimeout(fullscreenControlsTimer);
+                fullscreenControlsTimer = setTimeout(hideFullscreenControls, 3000); // Hide after 3 seconds
+            }
+        }
+
+        /**
+         * Hides the fullscreen controls.
+         */
+        function hideFullscreenControls() {
+            fullscreenControlsOverlay.classList.remove('visible');
+            fullscreenHint.classList.remove('visible');
         }
 
         // --- PDF.js Functions ---
@@ -625,8 +649,9 @@
                     </svg>
                     <span>Exit Full Screen</span>
                 `;
-                fullscreenControlsOverlay.classList.add('visible'); // Show fullscreen controls
-                fullscreenHint.classList.add('visible'); // Show hint
+                fullscreenControlsOverlay.classList.add('visible'); // Show controls initially
+                fullscreenHint.classList.add('visible');
+                showFullscreenControls(); // Start auto-hide timer
                 if (pdfDoc) { // Re-render PDF in fullscreen to adapt to new dimensions
                     renderPage(currentPageNum);
                 }
@@ -638,13 +663,20 @@
                     </svg>
                     <span>Full Screen</span>
                 `;
-                fullscreenControlsOverlay.classList.remove('visible'); // Hide fullscreen controls
-                fullscreenHint.classList.remove('visible'); // Hide hint
+                fullscreenControlsOverlay.classList.remove('visible'); // Hide controls
+                fullscreenHint.classList.remove('visible');
+                clearTimeout(fullscreenControlsTimer); // Clear any pending hide timer
                 if (pdfDoc) { // Re-render PDF back to normal size
                     renderPage(currentPageNum);
                 }
             }
         });
+
+        // Mouse movement and activity in fullscreen to show controls
+        pdfContainer.addEventListener('mousemove', showFullscreenControls);
+        fullscreenControlsOverlay.addEventListener('mousemove', showFullscreenControls);
+        pdfContainer.addEventListener('click', showFullscreenControls); // Any click also shows controls
+
 
         // Fullscreen Overlay Buttons (Delegated to main functions)
         fsPrevPageButton.addEventListener('click', () => {
@@ -682,7 +714,7 @@
             } catch (error) {
                 let specificMessage = `Playback failed: ${error.message || 'Unknown error'}.`;
                 if (error.name === "NotAllowedError") {
-                    specificMessage = "Autoplay prevented by browser. Click 'Play Audio' to start playback.";
+                    specificMessage = "Autoplay prevented by browser. Click 'Play Audio' to start playback. This is a common browser security feature.";
                 } else if (error.name === "AbortError") {
                     specificMessage = "Playback aborted.";
                 } else if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
