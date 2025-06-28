@@ -1039,8 +1039,8 @@
             // Load the PDF from a relative path
             const pdfUrl = './presentation.pdf'; // Ensure this matches your file name exactly
             loadPdf(`${pdfUrl}?t=${Date.now()}`); // Add cache-busting to ensure fresh load
-            // Audio will attempt to load based on its src="./audio.mp3"
-            // The play button will be enabled by 'loadeddata' or 'canplaythrough' events.
+            // Explicitly load audio data to ensure readiness
+            myAudio.load();
         });
     </script>
 </body>
