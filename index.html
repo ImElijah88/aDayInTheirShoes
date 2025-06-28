@@ -229,35 +229,7 @@
 
         <!-- PDF Viewer Section -->
         <div class="w-full flex flex-col items-center mt-6">
-            <div class="flex justify-between items-center w-full mb-3 px-2 flex-wrap gap-2">
-                <h2 class="text-xl font-semibold text-gray-700">Presentation Document</h2>
-                <div class="flex items-center space-x-2 flex-wrap gap-2 justify-end">
-                    <!-- Page Navigation -->
-                    <button id="prevPage" class="primary-button text-sm" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Prev
-                    </button>
-                    <span id="pageInfo" class="text-lg font-semibold text-gray-700 px-2 flex items-center">
-                        Page 1 of 1
-                    </span>
-                    <button id="nextPage" class="primary-button text-sm" disabled>
-                        Next
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <!-- Full Screen Button -->
-                    <button id="fullscreenButton" class="secondary-button text-sm ml-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
-                        </svg>
-                        <span>Full Screen</span>
-                    </button>
-                </div>
-            </div>
-
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Presentation Document</h2>
             <!-- PDF Container with Canvas for rendering -->
             <div id="pdfContainer" class="pdf-container">
                 <div id="pdfLoadingOverlay" class="pdf-loading-overlay">
@@ -297,27 +269,51 @@
             <div id="fullscreenHint" class="fullscreen-hint">Press Esc to exit Full Screen</div>
         </div>
 
-        <!-- Audio Player Controls -->
-        <div class="w-full max-w-xl flex flex-col items-center space-y-4 pt-6">
-            <h2 class="text-xl font-semibold text-gray-700">Audio Narration</h2>
-            <!-- Audio element: Relative path for GitHub Pages -->
-            <!-- Ensure 'audio.mp3' is in the root of your GitHub Pages branch -->
-            <audio id="myAudio" src="./audio.mp3" preload="auto" class="w-full hidden"></audio> <!-- Hidden, using custom controls -->
-
-            <!-- Custom Audio Controls -->
-            <div class="w-full flex items-center space-x-4">
-                <button id="playPauseButton" class="primary-button p-2 w-20 h-20 rounded-full">
+        <!-- Combined Controls Section -->
+        <div class="w-full max-w-2xl flex flex-col items-center space-y-4 pt-6">
+            <h2 class="text-xl font-semibold text-gray-700">Presentation Controls</h2>
+            
+            <div class="w-full flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <!-- Play/Pause Button -->
+                <button id="playPauseButton" class="primary-button p-2 w-20 h-20 rounded-full flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" />
                     </svg>
                     <span class="sr-only">Play/Pause Audio</span>
                 </button>
-                <div class="flex-grow flex flex-col items-center space-y-1">
+
+                <div class="flex-grow flex flex-col items-center space-y-1 w-full sm:w-auto">
+                    <!-- Audio Progress Bar -->
                     <input type="range" id="audioProgressBar" value="0" min="0" max="100" class="w-full">
                     <div class="flex justify-between w-full text-sm text-gray-600">
                         <span id="currentTime">0:00</span>
                         <span id="totalTime">0:00</span>
                     </div>
+                </div>
+
+                <!-- Page Navigation and Full Screen Buttons (grouped horizontally) -->
+                <div class="flex items-center space-x-2 flex-wrap gap-2 justify-center sm:justify-end">
+                    <button id="prevPage" class="primary-button text-sm" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Prev
+                    </button>
+                    <span id="pageInfo" class="text-lg font-semibold text-gray-700 px-2 flex items-center">
+                        Page 1 of 1
+                    </span>
+                    <button id="nextPage" class="primary-button text-sm" disabled>
+                        Next
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <button id="fullscreenButton" class="secondary-button text-sm ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 0h-4m4 0l-5-5" />
+                        </svg>
+                        <span>Full Screen</span>
+                    </button>
                 </div>
             </div>
 
@@ -601,8 +597,8 @@
 
         /**
          * Formats time for display (e.g., 0:00).
-         * @param {number} time The time in seconds.
-         * @returns {string} Formatted time string.
+         * @param {number} seconds The time in seconds.
+         * @returns {string} Formatted time string (MM:SS).
          */
         function formatTimeForDisplay(seconds) {
             const minutes = Math.floor(seconds / 60);
@@ -730,7 +726,7 @@
             } catch (error) {
                 let specificMessage = `Playback failed: ${error.message || 'Unknown error'}.`;
                 if (error.name === "NotAllowedError") {
-                    specificMessage = "Autoplay prevented by browser. Click 'Play Audio' to start playback. This is a common browser security feature.";
+                    specificMessage = "Autoplay prevented by browser. You might need to interact with the page (like dragging the timeline) before playing audio directly.";
                 } else if (error.name === "AbortError") {
                     specificMessage = "Playback aborted.";
                 } else if (myAudio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
@@ -742,10 +738,9 @@
                 console.error("Audio playback error:", error);
                 console.error("Audio current source:", myAudio.currentSrc, "ReadyState:", myAudio.readyState, "NetworkState:", myAudio.networkState);
                 isAudioPlaying = false;
-                playPauseButton.disabled = true; // Disable on error that prevents play
-                // Also update the fullscreen play button
-                fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+                // No automatic disabling of the button here, let the user try again
                 playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
+                fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
             }
         });
 
@@ -832,7 +827,7 @@
 
             showMessage(`Audio Load Error: ${errorMessage}`, 'error');
             isAudioPlaying = false;
-            playPauseButton.disabled = true;
+            playPauseButton.disabled = true; // Keep button disabled if error persists
             fsPlayPauseButton.disabled = true; // Disable fullscreen play button on error
             playPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
             fsPlayPauseButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197 2.132A1 1 0 0110 13.065V8.935a1 1 0 011.555-.832l3.197 2.132a1 1 0 010 1.666z" /></svg><span class="sr-only">Play Audio</span>`;
