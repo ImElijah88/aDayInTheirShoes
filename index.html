@@ -364,31 +364,38 @@
         let isAudioPlaying = false; // Tracks the current playback state of the audio
         let fullscreenControlsTimer = null; // Timer for auto-hiding full screen controls
 
+        // Flag to temporarily disable automatic PDF sync when user manually navigates
+        let manualOverrideActive = false;
+        let manualOverrideTimer = null;
+        const MANUAL_OVERRIDE_DURATION = 2000; // 2 seconds to allow manual navigation to settle
+
 
         // --- Synchronization Points (Customize these for your presentation!) ---
         // This array defines when each PDF page should appear based on audio time.
         // Format: { time: <seconds>, page: <page_number> }
-        // IMPORTANT: Make sure these times and page numbers match YOUR presentation!
-        // The previous set only went to page 5. I've added placeholders up to 18.
+        // IMPORTANT: Customize these exact timings to match your 18-page PDF and 5-minute audio.
+        // The current values are placeholders. Distribute them evenly or based on your narration.
         const syncPoints = [
             { time: 0, page: 1 },
-            { time: 5, page: 2 }, // Example: Page 2 at 5 seconds
-            { time: 10, page: 3 }, // Example: Page 3 at 10 seconds
-            { time: 15, page: 4 }, // Example: Page 4 at 15 seconds
-            { time: 20, page: 5 }, // Example: Page 5 at 20 seconds
-            { time: 25, page: 6 }, // Placeholder: Adjust these times!
-            { time: 30, page: 7 },
-            { time: 35, page: 8 },
-            { time: 40, page: 9 },
-            { time: 45, page: 10 },
-            { time: 50, page: 11 },
-            { time: 55, page: 12 },
-            { time: 60, page: 13 },
-            { time: 65, page: 14 },
-            { time: 70, page: 15 },
-            { time: 75, page: 16 },
-            { time: 80, page: 17 },
-            { time: 85, page: 18 },
+            { time: 10, page: 2 },  // Example: Page 2 at 10 seconds (adjust to your audio)
+            { time: 20, page: 3 },  // Example: Page 3 at 20 seconds
+            { time: 30, page: 4 },
+            { time: 40, page: 5 },
+            { time: 50, page: 6 },
+            { time: 60, page: 7 },
+            { time: 70, page: 8 },
+            { time: 80, page: 9 },
+            { time: 90, page: 10 },
+            { time: 100, page: 11 },
+            { time: 110, page: 12 },
+            { time: 120, page: 13 },
+            { time: 130, page: 14 },
+            { time: 140, page: 15 },
+            { time: 150, page: 16 },
+            { time: 160, page: 17 },
+            { time: 170, page: 18 } // This should be around 2 minutes 50 seconds for the last page
+                                     // If your audio is 5 mins, you might want to spread these out more,
+                                     // e.g., every ~16 seconds for 18 pages. (300 seconds / 18 pages ≈ 16.6 seconds/page)
         ];
 
         // --- Utility Functions ---
@@ -510,6 +517,7 @@
 
         /**
          * Handles navigation to a specific page number, queuing if necessary.
+         * This function now also sets a flag to temporarily disable audio-based sync.
          * @param {number} newPageNum The target page number.
          */
         function goToPage(newPageNum) {
@@ -522,10 +530,21 @@
                 console.warn(`[PDF] Attempted to go to invalid page: ${newPageNum}. Total pages: ${pdfDoc.numPages}`);
                 return;
             }
+            // If already on this page and not currently rendering, do nothing
             if (newPageNum === currentPageNum && !pageRendering) {
                 console.log(`[PDF] Already on page ${newPageNum}, no re-render needed.`);
                 return;
             }
+
+            // Set manual override flag
+            manualOverrideActive = true;
+            clearTimeout(manualOverrideTimer);
+            manualOverrideTimer = setTimeout(() => {
+                manualOverrideActive = false;
+                console.log("[PDF] Manual override ended.");
+            }, MANUAL_OVERRIDE_DURATION);
+            console.log("[PDF] Manual override active.");
+
             renderPage(newPageNum); // Directly call renderPage, it handles queuing
         }
 
@@ -599,7 +618,7 @@
          * Updates the PDF page based on the current audio playback time.
          */
         function syncPdfToAudio() {
-            if (!pdfDoc) return; // Cannot sync if PDF not loaded
+            if (!pdfDoc || manualOverrideActive) return; // Cannot sync if PDF not loaded or manual override is active
 
             const currentTime = myAudio.currentTime;
             let targetPage = currentPageNum;
@@ -825,6 +844,15 @@
         // Progress bar interaction (seeking)
         audioProgressBar.addEventListener('input', () => {
             myAudio.currentTime = audioProgressBar.value;
+            // When user seeks, temporarily disable auto-sync
+            manualOverrideActive = true;
+            clearTimeout(manualOverrideTimer);
+            manualOverrideTimer = setTimeout(() => {
+                manualOverrideActive = false;
+                console.log("[Audio Seek] Manual override ended after seek.");
+            }, MANUAL_OVERRIDE_DURATION);
+            console.log("[Audio Seek] Manual override active after seek.");
+            syncPdfToAudio(); // Manually sync PDF after seek
         });
 
         // Handle window resize to re-render PDF page to fit new size
